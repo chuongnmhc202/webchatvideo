@@ -1,5 +1,5 @@
 # Hưỡng dẫn chạy Source
-1. git clone ...
+1. git clone https://github.com/NguyenTanThanh0709/K8S_Chat.git
 2. docker-compose up
 3. thực hiện đưa data user.sql và chatDB.js vào MySql và MongoDB
 
