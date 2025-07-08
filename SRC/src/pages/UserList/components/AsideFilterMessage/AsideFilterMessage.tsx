@@ -72,8 +72,7 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
     setGroupResponse(null)
   }
 
-  const truncateText = (text: string): string =>
-    text.length > 20 ? text.substring(0, 20) + '...' : text
+
 
   const isUserOnline = (phone: string, onlineUsers: string[]) => {
     return onlineUsers.includes(phone)
@@ -142,7 +141,7 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
                     </div>
                     <div>
                       <div className='font-semibold text-sm text-gray-900'>{friend.user.name}</div>
-                      <div className='text-xs text-gray-500'>{truncateText(latestMessage.text)}</div>
+                      <div className='text-xs text-gray-500'>{(latestMessage.text)}</div>
                     </div>
                   </div>
 

@@ -53,6 +53,8 @@ export interface IMessage {
   candidate?: string;
   sdpMid?: string;
   sdpMLineIndex?: string;
+  avt?: string;
+  name?: string;
 }
 
 

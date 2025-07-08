@@ -221,13 +221,6 @@ export default function AsideFilterMessageGroup({ selectedCategory }: AsideFilte
 
   const isOnline = true
 
-  const truncateText = (text: string): string => {
-    let shortText = text.substring(0, 20)
-    if (text.length > 20) {
-      shortText += '...'
-    }
-    return shortText
-  }
 
   return (
 <div className="sticky left-[0rem] top-[0rem]  z-10 h-full overflow-y-auto bg-white p-4 shadow-md rounded-md border">
@@ -351,7 +344,7 @@ export default function AsideFilterMessageGroup({ selectedCategory }: AsideFilte
               </div>
               <div>
                 <div className='font-semibold text-sm text-gray-900'>{group.name}</div>
-                <div className='text-xs text-gray-500'>{truncateText(group.last_message)}</div>
+                <div className='text-xs text-gray-500'>{(group.last_message)}</div>
               </div>
             </div>
 

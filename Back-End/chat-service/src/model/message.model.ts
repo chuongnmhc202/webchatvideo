@@ -35,6 +35,8 @@ const messageSchema = new Schema<IMessage & Document>({
   candidate: { type: String },
   sdpMid: { type: String },
   sdpMLineIndex: { type: String },
+  avt: { type: String },
+  name: { type: String },
 });
 
 // Tạo chỉ mục cho các trường cần tối ưu truy vấn
