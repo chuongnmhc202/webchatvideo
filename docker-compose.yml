@@ -67,6 +67,6 @@ volumes:
   mysql-data:
   mongo-data:
 
-networks:
+networks: 
   backend-network:
     driver: bridge
