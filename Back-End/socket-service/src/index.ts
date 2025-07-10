@@ -1,26 +1,39 @@
-import express from 'express';
-import dotenv from 'dotenv';
+import http from "http";
+import express from "express";
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { Server } from "socket.io";
 import { InitializeBroker } from "./services/broker.service";
-import { app, server } from "./socket/socket";
 import { initializeSocketServer } from "./socket/socket";
+import { initializeVideoSocketServer } from "./socket/video-socket-server";
 
 dotenv.config();
+
+const app = express();
+const server = http.createServer(app);
 
 async function bootstrap() {
   app.use(express.json());
   app.use(cookieParser());
 
-  await InitializeBroker();             // Kafka / broker logic
-  await initializeSocketServer();       // Redis + Socket.IO
+  app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }));
 
-  app.use(
-    cors({
-      origin: "http://localhost:3000",
+  const io = new Server(server, {
+    cors: {
+      origin: ["http://localhost:3000"],
       credentials: true,
-    })
-  );
+    },
+    pingTimeout: 60000,
+    pingInterval: 25000,
+  });
+
+  await InitializeBroker();
+await initializeSocketServer(io);        // 🔄 Truyền io
+await initializeVideoSocketServer(io);   // 🔄 Truyền io (dùng io.of("/video-socket"))
 
   const PORT = 8182;
   server.listen(PORT, () => {

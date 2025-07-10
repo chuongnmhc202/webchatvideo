@@ -323,14 +323,28 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   };
 
   const handleVideoCall = (callerId: string, receiverId: string) => {
-    const phones = [callerId, receiverId].sort();
-    const roomId = `room${phones[0]}${phones[1]}`;
-    const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent`;
-    window.open(
-      url,
-      "_blank",
-      "popup=yes,width=1000,height=700,left=200,top=100,resizable=no"
-    );
+    if (!socket) return
+    if (socket) {
+      const phones = [callerId, receiverId].sort();
+      const roomId = `room${phones[0]}${phones[1]}`;
+      const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent`;
+
+      console.log("Connect- call -video sent");
+      socket.emit("join-room-call-sent", {
+        roomId,
+        callerId,
+        receiverId,
+      });
+
+      window.open(
+        url,
+        "_blank",
+        "popup=yes,width=1000,height=700,left=200,top=100,resizable=no"
+      );
+
+    } else {
+      console.warn("Socket is not connected.");
+    }
   };
   
 

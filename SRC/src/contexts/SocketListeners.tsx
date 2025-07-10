@@ -30,7 +30,7 @@ export default function SocketListeners() {
 
     socket.on("receiveMessage", handleReceive);
 
-    socket.on("incoming-join", (data) => {
+    socket.on("join-room-call-receive", (data) => {
       console.log("🔥 openModal-receive received", data);
       setIncomingCall(data)
     });
@@ -40,12 +40,12 @@ export default function SocketListeners() {
     };
   }, [socket, socketReady]);
 
-        const [incomingCall, setIncomingCall] = useState<null | { roomId: string, callerId: string, targetId: string, senderSocketID: string }>(null);
+        const [incomingCall, setIncomingCall] = useState<null | { roomId: string, callerId: string, receiverId: string}>(null);
       
         const acceptCall = () => {
           setIncomingCall(null);
           // Join room and setup media (already handled in useEffect)
-          const url = `/call?roomId=${incomingCall?.roomId}&callerId=${incomingCall?.callerId}&receiverId=${incomingCall?.targetId}&type=receive`;
+          const url = `/call?roomId=${incomingCall?.roomId}&callerId=${incomingCall?.callerId}&receiverId=${incomingCall?.receiverId}&type=receive`;
           window.open(
             url,
             "_blank",
@@ -55,7 +55,6 @@ export default function SocketListeners() {
       
         const declineCall = () => {
           setIncomingCall(null);
-          // Optional: Notify caller
         };
 
   return (

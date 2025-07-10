@@ -55,7 +55,12 @@ export default function Header() {
         if (socket == null) {
           return
         }
-        socket.disconnect();
+
+        if (socket) {
+          socket.emit("logout"); // 👈 Emit logout event để server cập nhật trạng thái
+          socket.disconnect();   // 👈 Sau đó mới disconnect
+        }
+
         // case : when logout then remove all queries. if not, although logout but still have data in cache at the Cart
         // The removeQueries method can be used to remove queries from the cache based on their query keys or any other functionally accessible property/state of the query.
         queryClient.removeQueries(['purchases', { status: purchasesStatus.inCart }])
