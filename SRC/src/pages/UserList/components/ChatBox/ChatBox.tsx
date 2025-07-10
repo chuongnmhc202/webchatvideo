@@ -206,10 +206,6 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
     setAllMessages(prev => [...prev, msg]);
   };
 
-
-
-
-
   socket.on("receiveMessage", handleReceive);
   return () => {
     socket.off("receiveMessage", handleReceive);

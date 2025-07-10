@@ -3,6 +3,7 @@ import { User } from "../database/entities/UserEntity";
 import { Like, Not } from "typeorm";
 import { User as UserInterface  } from '../interface/type';
 import { Friend } from "../database/entities/FriendEntity";
+import { GroupMember } from "@/database/entities/GroupMemberEntity";
 
 
 export const getProfileByPhone = async (phone: string): Promise<UserInterface | null> => {
@@ -248,3 +249,17 @@ export const getUsersByPhonesService = async (phones: string[], nameFilter: stri
     throw new Error('Error fetching users by phones');
   }
 };
+
+
+export const getUserGroupIdsService = async (phone: string): Promise<number[]> => {
+  const groupMembers = await AppDataSource.getRepository(GroupMember)
+    .createQueryBuilder('gm')
+    .select('gm.group_id', 'group_id')
+    .where('gm.user_phone = :phone', { phone })
+    .andWhere('gm.status = true')
+    .getRawMany();
+
+  // Trả về mảng group_id
+  return groupMembers.map(gm => gm.group_id);
+};
+

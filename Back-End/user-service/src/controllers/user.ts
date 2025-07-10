@@ -8,7 +8,8 @@ import {
     updateUserStatusByPhoneService,
     getProfileByPhone,
     getUsersWithOptionalSearchAndPaginationService,
-    getUserFriendsServiceControll
+    getUserFriendsServiceControll,
+    getUserGroupIdsService
     } from '../services/user.service';
 
 
@@ -157,3 +158,24 @@ export const getUserFriendsController = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getUserGroupIdsController = async (req: Request, res: Response): Promise<void> => {
+  const { phone } = req.params;
+
+  if (!phone || typeof phone !== 'string') {
+    res.status(400).json({ message: 'Missing or invalid phone parameter' });
+    return;
+  }
+
+  try {
+    const groupIds = await getUserGroupIdsService(phone);
+    res.status(200).json(groupIds); // ← chỉ trả về mảng
+  } catch (error: any) {
+    console.error('Error fetching group IDs:', error);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: error.message || 'Unknown error',
+    });
+  }
+};
+

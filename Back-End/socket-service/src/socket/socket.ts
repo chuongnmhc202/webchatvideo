@@ -5,6 +5,7 @@ import { createClient } from "redis";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { IMessage } from "../types/index";
 import { SendMessage } from "@/services/broker.service";
+import axios from 'axios';
 
 const app = express();
 const server = http.createServer(app);
@@ -72,9 +73,21 @@ export async function initializeSocketServer() {
     const onlineUsers = await redisClient.sMembers("online-users");
     io.emit("getOnlineUsers", onlineUsers);
 
+
+
     socket.on("heartbeat", async () => {
       if (userId) await redisClient.expire(`socket:${userId}`, 60);
     });
+
+    try {
+      const response = await axios.get(`http://localhost:8180/api/user/user/group/${userId}`);
+      const groupIds: string[] = response.data; // API trả về mảng [1, 3, 5]
+
+      groupIds.forEach(groupId => socket.join(groupId));
+      console.log(`📥 ${userId} joined groups:`, groupIds);
+    } catch (error) {
+      console.error('❌ Failed to load groups via API:', (error as Error).message);
+    }
 
     socket.on("disconnect", async () => {
       if (userId) {
@@ -104,39 +117,28 @@ export async function initializeSocketServer() {
       console.log("📩 Message received:", message);
       await SendMessage(message);
 
-      const receiverSocketIds = await getReceiverSocketIds(message.receiver);
-      if (receiverSocketIds.length > 0) {
+      if (message.is_group) {
+        // group message
+        const groupId = message.receiver; // receiver chính là groupId nếu là nhóm
         message.status = "delivered";
-        for (const sid of receiverSocketIds) {
-          io.to(sid).emit("receiveMessage", message);
-        }
+        socket.to(groupId.toString()).emit("receiveMessage", message);
+
+
       } else {
-        message.status = "sent";
+        const receiverSocketIds = await getReceiverSocketIds(message.receiver);
+        if (receiverSocketIds.length > 0) {
+          message.status = "delivered";
+          for (const sid of receiverSocketIds) {
+            io.to(sid).emit("receiveMessage", message);
+          }
+        } else {
+          message.status = "sent";
+        }
       }
+
+
+
     });
-
-    // socket.on("joinRoom", async ({ roomId }) => {
-    //   if (!userId || !roomId) return;
-    //   const currentRoom = await redisClient.get(`user-room:${userId}`);
-
-    //   if (currentRoom && currentRoom !== roomId) {
-    //     socket.emit("joinRoomFailed", { reason: `You are already in room ${currentRoom}` });
-    //     return;
-    //   }
-
-    //   await redisClient.set(`user-room:${userId}`, roomId, { EX: 3600 });
-    //   await redisClient.sAdd(`room:${roomId}`, userId);
-    //   socket.join(roomId);
-    //   console.log(userId, roomId, "user đã join room");
-
-    //   const participants = await redisClient.sMembers(`room:${roomId}`);
-    //   socket.emit("joinedRoom", {
-    //     roomId,
-    //     users: participants.filter((id) => id !== userId).map((id) => ({ id })),
-    //   });
-    //   socket.to(roomId).emit("newParticipant", { userId });
-    // });
-
 
     socket.on("joinRoom", async ({ roomId, userId }) => {
       socket.join(roomId);

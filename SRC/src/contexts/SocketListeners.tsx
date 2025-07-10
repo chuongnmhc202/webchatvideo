@@ -17,8 +17,16 @@ export default function SocketListeners() {
 
     const handleReceive = (msg: IMessage) => {
       console.log("📥 Tin nhắn đến:", msg);
-      toast.success(`📩 Có tin nhắn đến từ SĐT: ${msg.sender}`);
+
+      if (msg.is_group) {
+        // 🔔 Tin nhắn nhóm
+        toast.success(`👥 Tin nhắn mới trong nhóm #${msg.receiver} từ ${msg.sender}`);
+      } else {
+        // 💬 Tin nhắn cá nhân
+        toast.success(`📩 Tin nhắn mới từ SĐT: ${msg.sender}`);
+      }
     };
+
 
     socket.on("receiveMessage", handleReceive);
 

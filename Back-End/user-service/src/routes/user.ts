@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { getUsersByPhone, getPaginatedUsers,getUserFriendsController, getUsersByPhoneLike, updateUserProfile, changeUserPassword, updateUserStatusByPhone } from "../controllers/user";
+import { getUserGroupIdsController, getUsersByPhone, getPaginatedUsers,getUserFriendsController, getUsersByPhoneLike, updateUserProfile, changeUserPassword, updateUserStatusByPhone } from "../controllers/user";
 
 const router: Router = Router();
 
@@ -23,6 +23,11 @@ router.get('/paginate/:phone', (req: Request, res: Response, next: NextFunction)
 
 router.get('/friend/:phone', (req: Request, res: Response, next: NextFunction) => {
     getUserFriendsController(req, res).catch(next);
+});
+
+
+router.get('/group/:phone', (req: Request, res: Response, next: NextFunction) => {
+    getUserGroupIdsController(req, res).catch(next);
 });
 
 
