@@ -19,6 +19,7 @@
     const callerId = searchParams.get("callerId");
     const receiverId = searchParams.get("receiverId");
     const type = searchParams.get("type");
+    const isGroup = searchParams.get("isGroup");
     const [userId] = useState("user-" + Math.floor(Math.random() * 1000));
     const localStream = useRef<MediaStream | null>(null);
     
@@ -52,8 +53,8 @@
 
 
         // Join room
-        socket.emit("joinRoom", { roomId, userId });
-        console.log("joinRoom", { roomId, userId })
+        socket.emit("joinRoom", { roomId, userId, isGroup });
+        console.log("joinRoom", { roomId, userId , isGroup})
       };
 
       init();
@@ -142,7 +143,7 @@
         socket.emit("leaveRoom");
         peerConnection.current?.close();
       };
-    }, [roomId, userId]);
+    }, [roomId, userId, isGroup]);
 
     useEffect(() => {
       const socket = getVideoSocket();

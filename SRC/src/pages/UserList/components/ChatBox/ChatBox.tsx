@@ -325,23 +325,47 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   const handleVideoCall = (callerId: string, receiverId: string) => {
     if (!socket) return
     if (socket) {
-      const phones = [callerId, receiverId].sort();
-      const roomId = `room${phones[0]}${phones[1]}`;
-      const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent`;
 
-      console.log("Connect- call -video sent");
-      socket.emit("join-room-call-sent", {
-        roomId,
-        callerId,
-        receiverId,
-      });
+      if (selectedCategory == '1') {
+        const phones = [callerId, receiverId].sort();
+        const roomId = `room${phones[0]}${phones[1]}`;
+        const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent&isGroup=0`;
+  
+        console.log("Connect- call -video sent");
+        socket.emit("join-room-call-sent", {
+          roomId,
+          callerId,
+          receiverId,
+          isGroup: 0
+        });
+  
+        window.open(
+          url,
+          "_blank",
+          "popup=yes,width=1000,height=700,left=200,top=100,resizable=no"
+        );
 
-      window.open(
-        url,
-        "_blank",
-        "popup=yes,width=1000,height=700,left=200,top=100,resizable=no"
-      );
+      } else {
 
+        const phones = [callerId, receiverId].sort();
+        const roomId = `room${phones[0]}${phones[1]}`;
+        const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent&isGroup=1`;
+  
+        console.log("Connect- call -video sent group");
+        socket.emit("join-room-call-sent", {
+          roomId,
+          callerId,
+          receiverId,
+          isGroup: 1
+        });
+  
+        window.open(
+          url,
+          "_blank",
+          "popup=yes,width=1000,height=700,left=200,top=100,resizable=no"
+        );
+
+      }
     } else {
       console.warn("Socket is not connected.");
     }
@@ -359,7 +383,7 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
 
         <div className="flex items-center gap-3">
           <button onClick={() => alert("Đang gọi thoại...")} title="Gọi thoại" className="hover:bg-green-100 p-2 rounded-full"><MdCall className="text-2xl text-gray-600" /></button>
-          <button onClick={() => handleVideoCall(PhoneSender, userData?.user.phone || "")} title="Gọi video" className="hover:bg-green-100 p-2 rounded-full"><MdVideoCall className="text-2xl text-gray-600" /></button>
+          <button onClick={() => handleVideoCall(PhoneSender, selectedCategory !== '1' ? groupResponse?.id || "" : userData?.user.phone || "")} title="Gọi video" className="hover:bg-green-100 p-2 rounded-full"><MdVideoCall className="text-2xl text-gray-600" /></button>
           <button title="Xoá tất cả tin nhắn" className="hover:bg-red-100 p-2 rounded-full"><MdDelete className="text-2xl" /></button>
         </div>
       </div>

@@ -40,12 +40,12 @@ export default function SocketListeners() {
     };
   }, [socket, socketReady]);
 
-        const [incomingCall, setIncomingCall] = useState<null | { roomId: string, callerId: string, receiverId: string}>(null);
+        const [incomingCall, setIncomingCall] = useState<null | { roomId: string, callerId: string, receiverId: string, isGroup: number}>(null);
       
         const acceptCall = () => {
           setIncomingCall(null);
           // Join room and setup media (already handled in useEffect)
-          const url = `/call?roomId=${incomingCall?.roomId}&callerId=${incomingCall?.callerId}&receiverId=${incomingCall?.receiverId}&type=receive`;
+          const url = `/call?roomId=${incomingCall?.roomId}&callerId=${incomingCall?.callerId}&receiverId=${incomingCall?.receiverId}&type=receive&isGroup=${incomingCall?.isGroup}`;
           window.open(
             url,
             "_blank",

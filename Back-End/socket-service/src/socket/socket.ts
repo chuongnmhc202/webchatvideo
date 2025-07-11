@@ -142,15 +142,21 @@ export async function initializeSocketServer(io: Server) {
 
     });
 
-    socket.on("join-room-call-sent", async (payload: { roomId: string, callerId: string, receiverId: string }) => {
-      const { roomId, callerId, receiverId } = payload;
-      console.log("📩 Message received:", { roomId, callerId, receiverId });
+    socket.on("join-room-call-sent", async (payload: { roomId: string, callerId: string, receiverId: string, isGroup: number }) => {
+      const { roomId, callerId, receiverId, isGroup } = payload;
+      console.log("📩 Message received:", { roomId, callerId, receiverId, isGroup });
 
-      const targetSocketIds = await getReceiverSocketIds(receiverId);
-
-      for (const sid of targetSocketIds) {
-        io.to(sid).emit("join-room-call-receive",  {roomId, callerId, receiverId});
+      if (isGroup == 0) {
+        const targetSocketIds = await getReceiverSocketIds(receiverId);
+  
+        for (const sid of targetSocketIds) {
+          io.to(sid).emit("join-room-call-receive",  {roomId, callerId, receiverId, isGroup});
+        }
+      } else {
+        const groupId = receiverId; // receiver chính là groupId nếu là nhóm
+        socket.to(groupId.toString()).emit("join-room-call-receive", {roomId, callerId, receiverId, isGroup});
       }
+
     });
 
 

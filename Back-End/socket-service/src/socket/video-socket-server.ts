@@ -14,7 +14,7 @@ export async function initializeVideoSocketServer(io: Server) {
     const userId = socket.handshake.query.userId as string;
     console.log(`🎥 [Video] ${userId} connected (${socket.id})`);
 
-    socket.on("joinRoom", ({ roomId }) => {
+    socket.on("joinRoom", ({ roomId, isGroup }) => {
       socket.join(roomId);
       socket.data = { roomId, userId };
       const room = videoIo.adapter.rooms.get(roomId) ?? new Set();
