@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { IMessage } from 'src/types/utils.type';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { User } from 'src/types/user.type';
+
 import {
   FaMicrophoneSlash,
   FaMicrophone,
@@ -13,6 +17,8 @@ import {
   getVideoSocket,
   disconnectVideoSocket,
 } from "src/socket/videoSocket";
+import axios from "axios";
+
 
 const ICE_SERVERS = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -30,8 +36,28 @@ const VideoCall: React.FC = () => {
   const [searchParams] = useSearchParams();
   const roomId = searchParams.get("roomId");
   const receiverId = searchParams.get("receiverId");
-  const isGroup = searchParams.get("isGroup") === "true";
+  const callerId = searchParams.get("callerId");
+  const isGroup = searchParams.get("isGroup") === "1";
+  const type = searchParams.get("type");
   const [userId] = useState("user-" + Math.floor(Math.random() * 1000));
+
+    const { data: profileDataLS, refetch } = useQuery<User>({
+      queryKey: ['profile'],
+      queryFn: async () => {
+        const raw = localStorage.getItem('profile');
+        if (!raw) throw new Error('No profile found in localStorage');
+        return JSON.parse(raw) as User;
+      },
+    });
+
+  const sendSignalMessage = async (message: IMessage) => {
+    try {
+      const response = await axios.post("http://localhost:8181/api/chat/message/send", message);
+      console.log("✅ Message sent:", response.data);
+    } catch (err) {
+      console.error("❌ Failed to send signal message:", err);
+    }
+  };
 
   useEffect(() => {
     connectVideoSocket(userId);
@@ -55,6 +81,19 @@ const VideoCall: React.FC = () => {
       }
 
       socket.emit("joinRoom", { roomId: isGroup ? receiverId : roomId, userId, isGroup });
+
+        // 🔽 Send message to chat
+      await sendSignalMessage({
+        sender: callerId || '',
+        receiver: receiverId || '',
+        is_group: isGroup,
+        content_type: 'video_call_signal',
+        type_video_call: type === "sent" ? "offer" : "answer",
+        text: type === "sent" ? "🔴 Cuộc gọi video bắt đầu" : "🔴 Cuộc gọi video tham gia",
+        timestamp: new Date().toISOString(),
+        avt : profileDataLS?.avatar,
+        name: profileDataLS?.name
+      });
     };
 
     init();
@@ -133,7 +172,7 @@ const VideoCall: React.FC = () => {
       peerConnections.current = {};
       setRemoteStreams({});
     };
-  }, [roomId, userId, isGroup, receiverId]);
+  }, [roomId, userId, isGroup, receiverId, profileDataLS, callerId  ]);
 
   const toggleMic = () => {
     if (localStream.current) {
@@ -165,34 +204,31 @@ const VideoCall: React.FC = () => {
 
   return (
 <div className="flex flex-col h-screen bg-gray-900 text-white">
-  {/* Video Grid */}
-  <div className="flex-1 relative p-2">
+  {/* Video area */}
+  <div className="relative flex-1 p-2 overflow-hidden">
+    {/* Remote grid */}
     <div
       className="grid gap-2 h-full"
       style={{
-        gridTemplateColumns:
-          remoteStreamCount === 1 ? "1fr" :
-          remoteStreamCount === 2 ? "1fr 1fr" :
-          remoteStreamCount === 3 ? "1fr 1fr 1fr" :
-          remoteStreamCount === 4 ? "1fr 1fr" :
-          "repeat(auto-fit, minmax(200px, 1fr))"
+        gridTemplateColumns: "repeat(3, 1fr)", // max 3 per row
+        gridAutoRows: "1fr",
       }}
     >
-      {/* Remote videos */}
       {Object.entries(remoteStreams).map(([peerId, stream]) => (
-        <video
-          key={peerId}
-          autoPlay
-          playsInline
-          ref={(video) => {
-            if (video) video.srcObject = stream;
-          }}
-          className="w-full h-full bg-black rounded-lg object-cover"
-        />
+        <div key={peerId} className="w-full h-full bg-black rounded-lg overflow-hidden">
+          <video
+            autoPlay
+            playsInline
+            ref={(video) => {
+              if (video) video.srcObject = stream;
+            }}
+            className="w-full h-full object-cover"
+          />
+        </div>
       ))}
     </div>
 
-    {/* Local video - nhỏ ở góc dưới bên phải */}
+    {/* Local video fixed at bottom right */}
     <video
       ref={localVideoRef}
       autoPlay
@@ -218,8 +254,6 @@ const VideoCall: React.FC = () => {
     </button>
   </div>
 </div>
-
-
   );
 };
 

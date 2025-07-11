@@ -434,6 +434,40 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
               </div>
             )}
 
+{message.content_type === 'video_call_signal' && (
+  <div className={`w-full flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+    <div className={`max-w-[75%] flex items-center gap-2 p-3 rounded-xl shadow-sm
+      ${isOwnMessage ? 'bg-green-50 text-green-900' : 'bg-blue-50 text-blue-900'}
+    `}>
+      {/* Icon + Avatar */}
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📹</span>
+      </div>
+
+      {/* Nội dung */}
+      <div className="flex flex-col">
+        <span className="font-semibold">
+          {isOwnMessage
+            ? 'Bạn đã bắt đầu cuộc gọi video'
+            : `${message.name || message.sender} đang gọi bạn`}
+        </span>
+        {message.text && (
+          <span className="text-sm text-gray-500 mt-1 italic">{message.text}</span>
+        )}
+        <span className="text-xs text-gray-400 mt-1">
+          {moment(message.timestamp).calendar(undefined, {
+            lastDay: '[Hôm qua] HH:mm',
+            lastWeek: 'dddd HH:mm',
+            sameElse: 'DD/MM/YYYY HH:mm:ss',
+          })}
+        </span>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
             {/* VIDEO */}
             {message.content_type === 'video' && message.url_file && (
               <div className="flex justify-center mb-2">
@@ -458,7 +492,9 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
             )}
 
             {/* TEXT */}
+            {message.content_type === 'text' && message.text && (
             <div className="text-sm break-words">{message.text}</div>
+            )}
 
             {/* TIME */}
             <div className="text-[10px] text-right text-gray-300 mt-1">
