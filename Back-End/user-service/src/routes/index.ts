@@ -8,7 +8,7 @@ const rootRouter: Router = Router();
 
 rootRouter.get("/", (req, res) => {
     res.json({
-      message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",
+      message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄 user-service",
     });
   });
 

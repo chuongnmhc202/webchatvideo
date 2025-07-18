@@ -3,8 +3,13 @@ import { Server } from "socket.io";
 import { createClient } from "redis";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { IMessage } from "../types/index";
-import { SendMessage } from "@/services/broker.service";
+import { SendMessage } from "../services/broker.service";
 import axios from 'axios';
+import * as dotenv from "dotenv";
+dotenv.config();
+
+const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const USER_SERVICE_BASE_URL = process.env.USER_SERVICE_BASE_URL || "http://localhost:8180";
 
 const SIGNAL_CHANNEL_PREFIX = "signal-room:";
 let redisClient: ReturnType<typeof createClient>;
@@ -15,12 +20,12 @@ export async function getReceiverSocketIds(userId: string): Promise<string[]> {
 
 export async function initializeSocketServer(io: Server) {
   const pubClient = createClient({
-    url: "redis://localhost:6379",
+    url: REDIS_URL,
   });
   const subClient = pubClient.duplicate();
 
   redisClient = createClient({
-    url: "redis://localhost:6379",
+    url: REDIS_URL,
   });
 
   await Promise.all([
@@ -70,7 +75,7 @@ export async function initializeSocketServer(io: Server) {
 
 
     try {
-      const response = await axios.get(`http://localhost:8180/api/user/user/group/${userId}`);
+      const response = await axios.get(`${USER_SERVICE_BASE_URL}/api/user/user/group/${userId}`);
       const groupIds: string[] = response.data; // API trả về mảng [1, 3, 5]
 
       groupIds.forEach(groupId => socket.join(groupId));

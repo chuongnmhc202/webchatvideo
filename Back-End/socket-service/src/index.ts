@@ -12,19 +12,28 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
+
 
 async function bootstrap() {
   app.use(express.json());
   app.use(cookieParser());
 
   app.use(cors({
-    origin: "http://localhost:3000",
+    origin: CLIENT_ORIGIN,
     credentials: true,
   }));
 
+  app.get("/api/socket", (req, res) => {
+  res.status(200).json({
+    message: "socket-service is running"
+  });
+});
+
+
   const io = new Server(server, {
     cors: {
-      origin: ["http://localhost:3000"],
+      origin: [CLIENT_ORIGIN],
       credentials: true,
     },
     pingTimeout: 60000,
@@ -35,7 +44,8 @@ async function bootstrap() {
 await initializeSocketServer(io);        // 🔄 Truyền io
 await initializeVideoSocketServer(io);   // 🔄 Truyền io (dùng io.of("/video-socket"))
 
-  const PORT = 8182;
+const PORT = process.env.PORT || 8182;
+
   server.listen(PORT, () => {
     console.log(`🚀 Socket service listening on port ${PORT}`);
   });

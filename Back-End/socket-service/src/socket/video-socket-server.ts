@@ -1,12 +1,8 @@
 import { Server } from "socket.io";
 
-
-
 export async function initializeVideoSocketServer(io: Server) {
 
   const videoIo = io.of("/video-socket");
-
-
 
   console.log("🎥 Video socket namespace: /video-socket");
 

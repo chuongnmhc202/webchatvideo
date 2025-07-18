@@ -1,6 +1,15 @@
 import { MessageModel } from '../model/message.model';
 import { IMessage } from '../interface/message.interface';
 import axios from 'axios';
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
+const USER_SERVICE_BASE_URL = process.env.USER_SERVICE_BASE_URL || 'http://localhost:8180';
+
+const FRIEND_MESSAGE_ENDPOINT = `${USER_SERVICE_BASE_URL}/api/user/friend/friend/message`;
+const GROUP_MESSAGE_ENDPOINT = `${USER_SERVICE_BASE_URL}/api/user/group/group/member/message`;
+
 
 export class MessageService {
 
@@ -39,7 +48,7 @@ export class MessageService {
                 // Gọi API cập nhật lastMessage sau khi lưu thành công
       if (!messageData.is_group) {
         // Chỉ gọi nếu là tin nhắn cá nhân
-        await axios.post('http://localhost:8180/api/user/friend/friend/message', {
+        await axios.post(FRIEND_MESSAGE_ENDPOINT, {
           userPhone: savedMessage.sender,
           friendPhone: savedMessage.receiver,
           lastMessage: lastMessage // hoặc message.text, tuỳ interface bạn định nghĩa
@@ -49,12 +58,11 @@ export class MessageService {
           groupId: messageData.receiver,
           lastMessage: lastMessage // hoặc message.text, tuỳ interface bạn định nghĩa
         })
-          await axios.put('http://localhost:8180/api/user/group/group/member/message', {
+          await axios.put(GROUP_MESSAGE_ENDPOINT, {
           groupId: messageData.receiver,
           lastMessage: lastMessage // hoặc message.text, tuỳ interface bạn định nghĩa
         });
       }
-
 
           return savedMessage;
         } catch (error) {

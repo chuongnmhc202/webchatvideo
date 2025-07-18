@@ -1,11 +1,14 @@
 import { Consumer, Kafka, logLevel, Partitioners, Producer } from "kafkajs";
 import { MessageBrokerType, MessageHandler, PublishType } from "./broker.type";
 import { MessageType, OrderEvent, TOPIC_TYPE } from "../types";
+import * as dotenv from 'dotenv'
 
+
+dotenv.config()
 // configuration properties
 const CLIENT_ID = "socket-service";
 const GROUP_ID = "socket-service-group";
-const BROKERS = ["localhost:29092"];
+const BROKERS = process.env.KAFKA_BROKERS?.split(",") || [];
 
 const kafka = new Kafka({
     clientId: CLIENT_ID,

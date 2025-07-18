@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socket-service
+  namespace: microservices
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: socket-service
+  template:
+    metadata:
+      labels:
+        app: socket-service
+    spec:
+      containers:
+        - name: socket-service
+          image: nguyentanthanh0709/socket-service:latest
+          ports:
+            - containerPort: 8182
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: PORT
+              value: "8182"
+            - name: BROKER_1
+              value: kafka:9092
+            - name: USER_SERVICE_BASE_URL
+              value: http://user-service
+            - name: CLIENT_ORIGIN
+              value: http://localhost:3000
+            - name: GROUP_ID
+              value: socket-service-group
+            - name: CLIENT_ID
+              value: socket-service
+            - name: REDIS_URL
+              value: redis://redis:6379
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: socket-service
+  namespace: microservices
+spec:
+  selector:
+    app: socket-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8182

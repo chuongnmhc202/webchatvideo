@@ -3,7 +3,7 @@ import { User } from "../database/entities/UserEntity";
 import { Like, Not } from "typeorm";
 import { User as UserInterface  } from '../interface/type';
 import { Friend } from "../database/entities/FriendEntity";
-import { GroupMember } from "@/database/entities/GroupMemberEntity";
+import { GroupMember } from "../database/entities/GroupMemberEntity";
 
 
 export const getProfileByPhone = async (phone: string): Promise<UserInterface | null> => {

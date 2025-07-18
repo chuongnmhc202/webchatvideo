@@ -27,7 +27,7 @@ RUN npm install --production
 COPY --from=build /app/build ./build
 COPY tsconfig.json ./
 # Expose port
-EXPOSE 8180
+EXPOSE 8181
 
 # Set the command to run your application
 CMD ["npm", "run", "prod"]

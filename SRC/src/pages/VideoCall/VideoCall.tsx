@@ -21,7 +21,16 @@ import axios from "axios";
 
 
 const ICE_SERVERS = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    {
+      urls: ["stun:stun.l.google.com:19302"], // STUN Google cho fallback
+    },
+    // {
+    //   urls: ["turn:42.113.108.195:3478"],
+    //   username: "webrtcuser",
+    //   credential: "yourpassword",
+    // },
+  ],
 };
 
 const VideoCall: React.FC = () => {
