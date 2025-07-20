@@ -10,6 +10,7 @@ dotenv.config();
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 const USER_SERVICE_BASE_URL = process.env.USER_SERVICE_BASE_URL || "http://localhost:8180";
+const CHAT_SERVICE_BASE_URL = process.env.CHAT_SERVICE_BASE_URL || "http://localhost:8181";
 
 const SIGNAL_CHANNEL_PREFIX = "signal-room:";
 let redisClient: ReturnType<typeof createClient>;
@@ -129,8 +130,6 @@ export async function initializeSocketServer(io: Server) {
         const groupId = message.receiver; // receiver chính là groupId nếu là nhóm
         message.status = "delivered";
         socket.to(groupId.toString()).emit("receiveMessage", message);
-
-
       } else {
         const receiverSocketIds = await getReceiverSocketIds(message.receiver);
         if (receiverSocketIds.length > 0) {
@@ -140,6 +139,18 @@ export async function initializeSocketServer(io: Server) {
           }
         } else {
           message.status = "sent";
+          // nếu người dùng off thì tạo thông báo
+            try {
+            await axios.post(`${CHAT_SERVICE_BASE_URL}/api/chat/notification/send`, {
+              type: "message",
+              content: `${message.sender} đã gửi bạn một tin nhắn.`,
+              sender: message.sender,
+              receiver: message.receiver,
+              is_group: false,
+            });
+          } catch (error) {
+            console.error("Failed to send notification:", error);
+          }
         }
       }
 

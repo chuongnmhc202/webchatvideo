@@ -32,3 +32,4 @@ spec:
                 name: socket-service
                 port:
                   number: 80
+

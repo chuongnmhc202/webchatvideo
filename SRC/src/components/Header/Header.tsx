@@ -144,7 +144,7 @@ const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
 
 
   return (
-    <div className='sticky top-0 z-20 bg-gray-200  p-4 text-white transition-[transform.2scubic-bezier(.4,0,.2,1)]'>
+    <div className='sticky left-0 top-0 z-20 bg-gray-200  p-4 text-white transition-[transform.2scubic-bezier(.4,0,.2,1)]'>
       <div className='container'>
         <div className='flex items-center justify-between'>
           <div className='flex justify-start gap-x-3 text-orange'>
@@ -188,7 +188,7 @@ const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
               </svg>
               <span className='mx-1'>{currentLanguage}</span>
             </div>
-                      <div className='col-span-1 justify-self-end'>
+            <div className='col-span-1 justify-self-end'>
             <Popover
               placement='bottom-end'
               renderPopover={
@@ -283,7 +283,8 @@ const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
               <AiOutlineBell className='text-orange w-[35px] h-[22px]' />
                 {notifications && notifications.length > 0 && (
                   <span className='absolute top-[-5px] right-[-10px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange '>
-                    {notifications?.length}
+                    {/* {notifications?.length} */}
+                    {notifications.filter(n => n.status === 'unread').length}
                   </span>
                 )}
               </Link>

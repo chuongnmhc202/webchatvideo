@@ -15,10 +15,17 @@ import { MdChat, MdCall, MdVideoCall, MdDelete} from 'react-icons/md'
 import axios from 'axios';
 import { useDebounce } from 'use-debounce';
 import { message } from "antd";
+import Popover from '../../../../components/Popover'
+
 
 interface AsideFilterMessageProps {
   selectedCategory: string;
 }
+
+type GroupedMessages = {
+  date: string;
+  messages: IMessage[];
+};
 
 export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) {
   const { socketReady, socket } = useSocketContext();
@@ -33,7 +40,26 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   const scroll = useRef<HTMLDivElement>(null);
   const chatBodyRef = useRef<HTMLDivElement>(null);
 
+  const [mediaPreview, setMediaPreview] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
+
+function groupMessagesByDate(messages: IMessage[]): GroupedMessages[] {
+  const grouped: { [date: string]: IMessage[] } = {};
+
+  messages.forEach((msg) => {
+    const dateKey = moment(msg.timestamp).format("YYYY-MM-DD");
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = [];
+    }
+    grouped[dateKey].push(msg);
+  });
+
+  return Object.entries(grouped).map(([date, messages]) => ({
+    date,
+    messages,
+  }));
+}
   
 
   const { messagesData, userData, groupResponse } = useMessages();
@@ -77,7 +103,7 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
     if (!messagesData) return [];
     const query: GetMessagesQuery = {
       ...messagesData,
-      limit: 5,
+      limit: 10,
       is_group:messagesData.is_group,
       lastMessageTimestamp: lastTimestamp,
     };
@@ -86,36 +112,51 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   };
 
   // Load more on scroll top
-  useEffect(() => {
-    const handleScroll = async () => {
-      const container = chatBodyRef.current;
-      if (!container || container.scrollTop !== 0 || allMessages.length === 0) return;
+useEffect(() => {
+  const container = chatBodyRef.current;
+  console.log("croll 2")
 
-      setLoadingMore(true);
-      const firstMsg = allMessages[0];
-      let isoTime;
-      if (firstMsg.timestamp) {
-        isoTime = new Date(firstMsg.timestamp).toISOString();
-      }
+  if (!container) return;
 
-      const moreMessages = await fetchMessages(isoTime);
+  console.log("croll 1")
 
-      if (moreMessages.length > 0) {
-        const scrollHeightBefore = container.scrollHeight;
-        setAllMessages((prev) => [...moreMessages, ...prev]);
-        setTimeout(() => {
-          const scrollHeightAfter = container.scrollHeight;
-          container.scrollTop = scrollHeightAfter - scrollHeightBefore;
-        }, 200);
-      }
+const handleScroll = async () => {
+  const container = chatBodyRef.current;
+  if (!container || container.scrollTop !== 0 || loadingMore || allMessages.length === 0) return;
 
-      setLoadingMore(false);
-    };
+  setLoadingMore(true);
 
-    const container = chatBodyRef.current;
-    container?.addEventListener("scroll", handleScroll);
-    return () => container?.removeEventListener("scroll", handleScroll);
-  }, [allMessages]);
+  const firstMsg = allMessages[0];
+  const isoTime = firstMsg.timestamp ? new Date(firstMsg.timestamp).toISOString() : undefined;
+
+  const prevScrollTop = container.scrollTop;
+  const prevScrollHeight = container.scrollHeight;
+
+  try {
+    const moreMessages = await fetchMessages(isoTime);
+    if (moreMessages.length > 0) {
+      setAllMessages((prev) => [...moreMessages, ...prev]);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const newScrollHeight = container.scrollHeight;
+          const delta = newScrollHeight - prevScrollHeight;
+          container.scrollTop = prevScrollTop + delta;
+        });
+      });
+    }
+  } catch (err) {
+    console.error('Error loading more messages:', err);
+  } finally {
+    setLoadingMore(false);
+  }
+};
+
+
+
+  container.addEventListener('scroll', handleScroll);
+  return () => container.removeEventListener('scroll', handleScroll);
+}, [allMessages, loadingMore]);
 
   const mutationSendMessage = useMutation({
     mutationFn: (newMsg: IMessage) => messagesApi.sendMessage(newMsg),
@@ -132,19 +173,24 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   const sendTextMessage = async (message: string, clearInput: (msg: string) => void) => {
 
 
-    // console.log(messagesData, userData, groupResponse );
+  if (isSending) return;
+    setIsSending(true);
 
   let newMsg: IMessage;
   if (previewImage && file) {
     const uploaded = await handleSendPastedImage();
     if (!uploaded) {
       toast.error("Gửi ảnh thất bại");
+      setIsSending(false);
       return;
     }
 
     newMsg = uploaded
   } else {
-    if (!message.trim()) return; // Ngăn gửi tin nhắn rỗng khi không có ảnh
+    if (!message.trim()) {
+      setIsSending(false);
+      return;
+    }
     newMsg = {
       text: message,
       sender: PhoneSender,
@@ -157,7 +203,10 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   }
 
   // console.log(newMsg)
-    if (!socket) return
+     if (!socket) {
+      setIsSending(false);
+      return;
+    }
     if (socket) {
       console.log("Connect");
       socket.emit("sendMessage", newMsg);
@@ -166,6 +215,7 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
     }
     setAllMessages(prev => [...prev, newMsg]);
     clearInput("");
+    setIsSending(false);
   };
 
   const resetUnreadCount = async (userPhone: string, friendPhone: string, groupId :string) => {
@@ -373,12 +423,19 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
   
 
   return (
-    <div className="sticky left-[0rem] top-[0rem]  z-10 h-full overflow-y-auto bg-white p-4 shadow-md rounded-md ">
-    <div className="h-[90vh] flex flex-col  rounded-xl shadow-md overflow-hidden bg-white">
+<div className='h-full flex flex-col bg-white p-4 shadow-md rounded-md border'>
+
+    <div className="h-screen flex flex-col  rounded-xl shadow-md overflow-hidden bg-white">
       <div className="flex justify-between items-center p-4 bg-green-50 -b font-semibold text-gray-800">
 <span className="flex items-center gap-2 text-orange-200">
   <MdChat className="text-2xl text-gray-600" />
-  {groupResponse ? `Nhóm: ${groupResponse.name}` : `Bạn: ${userData?.user.name}`}
+  {/* {groupResponse ? `Nhóm: ${groupResponse.name}` : `Bạn: ${userData?.user.name}`} */}
+  {groupResponse?.name
+  ? `Nhóm: ${groupResponse.name}`
+  : userData?.user?.name
+    ? `Bạn: ${userData.user.name}`
+    : ""}
+
 </span>
 
         <div className="flex items-center gap-3">
@@ -388,7 +445,7 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
         </div>
       </div>
 
-      <div ref={chatBodyRef} className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-gray-50">
+      <div ref={chatBodyRef} style={{ minHeight: '200px' }} className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-2 space-y-2 bg-gray-50">
         {loadingMore && <div className="text-center text-sm text-gray-400">Đang tải thêm...</div>}
 {allMessages.map((message, index) => {
   const isOwnMessage = message.sender === PhoneSender;
@@ -401,17 +458,40 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
     >
       <div className={`flex gap-2 items-start ${isOwnMessage ? 'flex-row-reverse' : ''}`}>
         {/* Avatar */}
+        {!isOwnMessage && (
         <img
           src= {message.avt}
           alt="avatar"
           className="w-8 h-8 rounded-full object-cover"
         />
+        )}
 
         <div className="flex flex-col max-w-[70%]">
           {/* 👤 Name of sender */}
           <span className="text-xs text-gray-500 mb-1">
-            {isOwnMessage ? 'Bạn' : message.name || message.sender}
+            {isOwnMessage ? '' : message.name || message.sender}
           </span>
+
+                      <Popover
+            
+              as={'span'}
+              className='relative flex cursor-pointer  items-center py-1'
+              renderPopover={
+                <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
+                  <div className='flex flex-col py-2 pl-3 pr-28'>
+                            <span className="text-xs text-gray-400 mt-1">
+                              {moment(message.timestamp).calendar(undefined, {
+                                lastDay: '[Hôm qua] HH:mm',
+                                lastWeek: 'dddd HH:mm',
+                                sameElse: 'DD/MM/YYYY HH:mm:ss',
+                              })}
+                            </span>
+                  </div>
+                </div>
+              }
+            >
+
+     
 
           {/* Bubble */}
           <div
@@ -429,50 +509,43 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
                 <img
                   src={message.url_file}
                   alt={message.name_file || 'Image'}
+                  onClick={() => setMediaPreview({ type: 'image', url: message.url_file! })}
                   className="rounded-lg max-w-full w-full max-h-[300px] object-contain"
                 />
               </div>
             )}
 
-{message.content_type === 'video_call_signal' && (
-  <div className={`w-full flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-    <div className={`max-w-[75%] flex items-center gap-2 p-3 rounded-xl shadow-sm
-      ${isOwnMessage ? 'bg-green-50 text-green-900' : 'bg-blue-50 text-blue-900'}
-    `}>
-      {/* Icon + Avatar */}
-      <div className="flex items-center gap-2">
-        <span className="text-xl">📹</span>
-      </div>
+            {message.content_type === 'video_call_signal' && (
+              <div className={`w-full flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[75%] flex items-center gap-2 p-3 rounded-xl shadow-sm
+                  ${isOwnMessage ? 'bg-green-50 text-green-900' : 'bg-blue-50 text-blue-900'}
+                `}>
+                  {/* Icon + Avatar */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">📹</span>
+                  </div>
 
-      {/* Nội dung */}
-      <div className="flex flex-col">
-        <span className="font-semibold">
-          {isOwnMessage
-            ? 'Bạn đã bắt đầu cuộc gọi video'
-            : `${message.name || message.sender} đang gọi bạn`}
-        </span>
-        {message.text && (
-          <span className="text-sm text-gray-500 mt-1 italic">{message.text}</span>
-        )}
-        <span className="text-xs text-gray-400 mt-1">
-          {moment(message.timestamp).calendar(undefined, {
-            lastDay: '[Hôm qua] HH:mm',
-            lastWeek: 'dddd HH:mm',
-            sameElse: 'DD/MM/YYYY HH:mm:ss',
-          })}
-        </span>
-      </div>
-    </div>
-  </div>
-)}
-
-
+                  {/* Nội dung */}
+                  <div className="flex flex-col">
+                    <span className="font-semibold">
+                      {isOwnMessage
+                        ? 'Bạn đã bắt đầu cuộc gọi video'
+                        : `${message.name || message.sender} đang gọi bạn`}
+                    </span>
+                    {message.text && (
+                      <span className="text-sm text-gray-500 mt-1 italic">{message.text}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* VIDEO */}
             {message.content_type === 'video' && message.url_file && (
               <div className="flex justify-center mb-2">
                 <video
                   controls
+                  onClick={() => setMediaPreview({ type: 'video', url: message.url_file! })}
                   className="rounded-lg w-full max-w-xs max-h-[300px] object-contain"
                   src={message.url_file}
                 />
@@ -495,25 +568,20 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
             {message.content_type === 'text' && message.text && (
             <div className="text-sm break-words">{message.text}</div>
             )}
-
-            {/* TIME */}
-            <div className="text-[10px] text-right text-gray-300 mt-1">
-              {moment(message.timestamp).calendar(undefined, {
-                lastDay: '[Hôm qua] HH:mm',
-                lastWeek: 'dddd HH:mm',
-                sameElse: 'DD/MM/YYYY HH:mm:ss',
-              })}
-            </div>
           </div>
+
+       </Popover>
+
         </div>
       </div>
     </div>
   );
+
+  
 })}
-
-
-
       </div>
+
+      
 
 {previewImage && (
   <div className="flex items-center gap-2 mb-2">
@@ -566,17 +634,67 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
         <input type="file" onChange={handleFileChange} className="hidden" id="fileInput" />
         <label htmlFor="fileInput" title="Gửi file" className="cursor-pointer">📎</label>
         
-      <button
-      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-      onClick={() =>
-        sendTextMessage(textMessage, setTextMessage)
-      }
-    >
-      Gửi
-    </button>
+<button
+  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-2 min-w-[80px]"
+  onClick={() => sendTextMessage(textMessage, setTextMessage)}
+  disabled={isSending}
+>
+  {isSending ? (
+    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+        fill="none"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8H4z"
+      />
+    </svg>
+  ) : (
+    'Gửi'
+  )}
+</button>
+
       </div>
     </div>
+    {mediaPreview && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
+    onClick={() => setMediaPreview(null)} // click để đóng
+  >
+    {mediaPreview.type === 'image' ? (
+      <img
+        src={mediaPreview.url}
+        className="w-[80%] h-[80%] object-contain rounded-lg shadow-lg"
+      />
+    ) : (
+      <video
+        src={mediaPreview.url}
+        className="w-[80%] h-[80%] object-contain rounded-lg shadow-lg"
+        controls
+        autoPlay
+      />
+    )}
+
+    <button
+      onClick={() => setMediaPreview(null)}
+      className="absolute top-4 right-4 text-white text-3xl"
+    >
+      ✕
+    </button>
+  </div>
+)}
+
 </div>
 
   );
 }
+
+
+

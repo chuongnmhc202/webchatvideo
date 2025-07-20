@@ -1,6 +1,9 @@
 import { AppDataSource } from "../database/data-source";
 import { Friend } from "../database/entities/FriendEntity";
 import { User } from "../database/entities/UserEntity";
+import axios from "axios";
+
+const CHAT_SERVICE_BASE_URL = process.env.CHAT_SERVICE_BASE_URL || "http://localhost:8181";
 
 export const sendFriendRequestService = async (
   senderPhone: string,
@@ -21,8 +24,9 @@ export const sendFriendRequestService = async (
     .getOne();
 
   if (existingRelation) {
+
     if (existingRelation.status === 'accepted') {
-      return 'You are already friends';
+      return 'Các bạn đã là bạn bè rồi';
     }
 
     if (existingRelation.status === 'pending') {
@@ -32,17 +36,35 @@ export const sendFriendRequestService = async (
           { user_phone: receiverPhone, friend_phone: senderPhone },
           { status: 'accepted' }
         );
-        return 'Friend request accepted automatically.';
+        // ✅ Gửi thông báo "friend_accept"
+        try {
+          await axios.post(`${CHAT_SERVICE_BASE_URL}/api/chat/notification/send`, {
+            type: "friend_accept",
+            content: `${senderPhone} đã chấp nhận lời mời kết bạn.`,
+            sender: senderPhone,
+            receiver: receiverPhone,
+            is_group: false
+          });
+        console.log("send ok")
+
+        } catch (error) {
+          console.error("❌ Lỗi gửi notification friend_accept:", error);
+        }
+        return 'Hai bạn đã thành bạn bè của nhau';
       }
 
-      throw new Error('Friend request already sent.');
+
+
+      throw new Error('Đã gửi yêu cầu kết bạn.');
     }
+
+
   }
   const user = await AppDataSource.getRepository(User).findOne({ where: { phone: senderPhone } });
   const friend = await AppDataSource.getRepository(User).findOne({ where: { phone: receiverPhone } });
   // Check if both user and friend exist
   if (!user || !friend) {
-    throw new Error('One or both users not found.');
+    throw new Error('Không tìm thấy một hoặc cả hai người dùng.');
   }
   const friendEntity = new Friend();
   friendEntity.user = user;  // Assign the user
@@ -50,12 +72,27 @@ export const sendFriendRequestService = async (
   friendEntity.user_phone = senderPhone;
   friendEntity.friend_phone = receiverPhone;
   friendEntity.status = "pending"; // Example status
-  
+
+    // ✅ Gửi thông báo "friend_request"
+  try {
+    await axios.post(`${CHAT_SERVICE_BASE_URL}/api/chat/notification/send`, {
+      type: "friend_request",
+      content: `${senderPhone} đã gửi lời mời kết bạn.`,
+      sender: senderPhone,
+      receiver: receiverPhone,
+      is_group: false
+    });
+    console.log("send")
+  } catch (error) {
+    console.error("❌ Lỗi gửi notification friend_request:", error);
+  }
+
 
 
   await AppDataSource.getRepository(Friend).save(friendEntity);
-  return 'Friend request sent.';
+  return 'Đã gửi yêu cầu kết bạn.';
 };
+
 
 export const respondToFriendRequest = async (phone: string, friendPhone: string, action: 'accept' | 'reject') => {
   const friendRelation = await AppDataSource.getRepository(Friend)

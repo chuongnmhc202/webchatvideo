@@ -39,6 +39,7 @@ export const SocketProvider = ({ userId, children }: { userId: string; children:
     };
 
     const handleOnlineUsers = (users: string[]) => {
+      console.log("🔁 New onlineUsers:", users);
       setOnlineUsers(users);
     };
 

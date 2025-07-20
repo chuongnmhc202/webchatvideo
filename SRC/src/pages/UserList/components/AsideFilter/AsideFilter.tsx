@@ -14,7 +14,9 @@ export default function AsideFilter({ categories, selectedCategory, onChangeCate
   const { t } = useTranslation('home')
 
   return (
-<div className="sticky left-0 top-[0rem] z-20 h-[calc(100vh-0rem)] w-full bg-blue-600 p-5 shadow-lg">
+<div className="fixed left-0 top-0 z-20 h-screen  bg-blue-600 p-5 shadow-lg overflow-hidden">
+
+
   <div className="flex h-full flex-col justify-between">
     {/* TOP SECTION - Category Icons */}
     <div>
@@ -46,10 +48,10 @@ export default function AsideFilter({ categories, selectedCategory, onChangeCate
             <li key={categoryItem._id}>
               <div
                 className={clsx(
-                  'mx-auto flex items-center justify-center items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer',
+                  'mx-auto flex items-center text-white justify-center items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer',
                   {
-                    'bg-orange/10 text-orange font-semibold': isActive,
-                    'hover:bg-gray-200 hover:text-orange': !isActive,
+                    'bg-orange/20 text-orange font-semibold': isActive,
+                    'hover:bg-gray-300': !isActive,
                   }
                 )}
                 onClick={() => onChangeCategory(categoryItem._id)}
@@ -65,32 +67,32 @@ export default function AsideFilter({ categories, selectedCategory, onChangeCate
     {/* BOTTOM SECTION - Static Icons */}
     <ul className="space-y-3 mt-4 text-center">
       <li>
-        <div  className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div  className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdCloud className="text-3xl" />
         </div>
       </li>
       <li>
-        <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdCloudQueue className="text-3xl" />
         </div>
       </li>
       <li>
-        <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdCropFree className="text-3xl" />
         </div>
       </li>
       <li>
-        <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdHomeRepairService className="text-3xl" />
         </div>
       </li>
       <li>
-        <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdSettings className="text-3xl" />
         </div>
       </li>
             <li>
-        <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
+        <div className="mx-auto flex items-center text-white justify-center w-12 h-12 rounded-lg hover:bg-gray-200 hover:text-orange transition-colors cursor-pointer">
           <MdSettings className="text-3xl opacity-0" />
         </div>
       </li>

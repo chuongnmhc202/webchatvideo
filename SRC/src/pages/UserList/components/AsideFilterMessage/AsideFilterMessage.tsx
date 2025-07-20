@@ -74,12 +74,14 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
 
 
 
-  const isUserOnline = (phone: string, onlineUsers: string[]) => {
+  const isUserOnline = (phone: string) => {
     return onlineUsers.includes(phone)
   }
 
   return (
-    <div className='sticky left-0 top-0 z-10 h-full w-full overflow-y-auto bg-white p-4 shadow-md rounded-md border'>
+    <div className='h-full flex flex-col bg-white p-4 shadow-md rounded-md border'>
+    <div className='sticky top-0 bg-white z-10'>
+
       <Link to={path.home} className='flex items-center font-bold'>
         <TfiMenuAlt className='mr-3 h-4 w-3 fill-current' />
         {t('aside filter.filter friend group')}
@@ -133,7 +135,7 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
                       <span
                         className={clsx(
                           'absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white',
-                          isUserOnline(friend.user.phone as string, onlineUsers)
+                          isUserOnline(friend.user.phone as string)
                             ? 'bg-green-500'
                             : 'bg-gray-400'
                         )}
@@ -161,6 +163,7 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
           )
         })}
       </ul>
+    </div>
     </div>
   )
 }
