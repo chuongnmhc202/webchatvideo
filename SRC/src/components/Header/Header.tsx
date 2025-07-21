@@ -21,6 +21,8 @@ import { useNavigate } from 'react-router-dom'
 import friendApi from 'src/apis/friend.api'
 import { FriendRequest } from 'src/types/user.type'
 import { getSocket } from 'src/socket/socket'
+import { User } from 'src/types/user.type';
+
 
 const MAX_PURCHASES = 5
 export default function Header() {
@@ -140,7 +142,14 @@ const currentNotifications = notifications?.slice(indexOfFirstItem, indexOfLastI
 const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
 
 
-
+  const { data: profileDataLS, refetch } = useQuery<User>({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const raw = localStorage.getItem('profile');
+      if (!raw) throw new Error('No profile found in localStorage');
+      return JSON.parse(raw) as User;
+    },
+  });
 
 
   return (
@@ -148,27 +157,11 @@ const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
       <div className='container'>
         <div className='flex items-center justify-between'>
           <div className='flex justify-start gap-x-3 text-orange'>
-<div>
-          <Link to='/'>
-            <svg viewBox='0 0 192 65' className='mt-[-6px] mr-[-80px] h-[10px] fill-orange lg:h-9 '>
-              <g fillRule='evenodd'>
-                <circle cx="30" cy="30" r="28" stroke="orange" stroke-width="2" fill="none" />
-                <polygon 
-                  points="30,8 48,19 48,41 30,52 12,41 12,19" 
-                  fill="rgba(255,165,0,0.1)" 
-                  stroke="orange"
-                />
-                <path 
-                  d="M18,40 L22,22 L30,34 L38,22 L42,40" 
-                  stroke="orange" 
-                  stroke-width="3" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                />
-              </g>
-            </svg>
+
+          <Link to='/' className ="font-bold">
+            WebSocial - {profileDataLS?.name}
           </Link>
-</div>
+
             <p>Chat Center</p>
             <p>Download</p>
             <div className='flex'>
@@ -367,7 +360,7 @@ const totalPages = Math.ceil(notifications?.length || 0 / itemsPerPage)
                     className='h-full w-full rounded-full object-cover'
                   />
                 </div>
-                <p>{profile?.email}</p>
+                <p>{profile?.phone}</p>
               </Popover>
             )}
             {!isAuthenticated && (

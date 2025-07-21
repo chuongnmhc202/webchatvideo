@@ -179,7 +179,10 @@ export const getUserFriendsServiceControll = async (phone: string, name?: string
         user: otherUser,
         last_message: friend.last_message,
         last_message_date: friend.last_message_date,
-        unread_count:friend.unread_count
+        unread_count_user: friend.unread_count_user,
+        unread_count_friend: friend.unread_count_friend,
+        user_phone: friend.user_phone,
+        friend_phone: friend.friend_phone
       };
     })
     .filter((item) => item !== null);

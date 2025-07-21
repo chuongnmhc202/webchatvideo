@@ -22,7 +22,7 @@ export interface GroupReponse {
   created_at: string
   last_message: string
   last_message_date: string
-  unread_count: number
+  unread_count:number
 }
 
 export interface Group {
@@ -39,7 +39,10 @@ export interface FriendListResponse {
     user: User;
     last_message: string;
     last_message_date: string;
-    unread_count:number;
+    unread_count_user:number;
+    unread_count_friend:number;
+    user_phone: string;
+    friend_phone: string;
   }[];
 }
 
@@ -47,7 +50,10 @@ export interface friends {
     user: User;
     last_message: string;
     last_message_date: string;
-    unread_count:number;
+    unread_count_user:number;
+    unread_count_friend:number;
+    user_phone: string;
+    friend_phone: string;
 }
 
 

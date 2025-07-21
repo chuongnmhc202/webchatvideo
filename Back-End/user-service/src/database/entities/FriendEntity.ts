@@ -22,9 +22,11 @@ export class Friend {
   last_message_date: Date;
 
   @Column({ type: 'int', default: 0 })
-  unread_count: number;
+  unread_count_user: number;
 
-  
+  @Column({ type: 'int', default: 0 })
+  unread_count_friend: number;
+
   // Eager load the friend entity
   @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'friend_phone', referencedColumnName: 'phone' })

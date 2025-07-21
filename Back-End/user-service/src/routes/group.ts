@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { createGroupController, getUserGroupsController,removeGroupMemberController, getGroupMembersHandler, addMembersToGroupController, updateGroupLastMessageController, resetUnreadCountController} from "../controllers/group";
+import { resetGroupUnreadCountController, createGroupController, getUserGroupsController,removeGroupMemberController, getGroupMembersHandler, addMembersToGroupController, updateGroupLastMessageController} from "../controllers/group";
 
 const routerGroup: Router = Router();
 
@@ -23,8 +23,8 @@ routerGroup.put('/group/member/message', (req: Request, res: Response, next: Nex
     updateGroupLastMessageController(req, res).catch(next);
 });
 
-routerGroup.put('/group/member/unread', (req: Request, res: Response, next: NextFunction) => {
-    resetUnreadCountController(req, res).catch(next);
+routerGroup.put('/group/member/unread/:groupId', (req: Request, res: Response, next: NextFunction) => {
+    resetGroupUnreadCountController(req, res).catch(next);
 });
 
 routerGroup.delete('/group/member/:groupId/:userPhone', (req: Request, res: Response, next: NextFunction) => {

@@ -151,11 +151,19 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
                     <div className='text-xs text-gray-400'>
                       {moment(latestMessage.createdAt).format('HH:mm DD/MM')}
                     </div>
-                    {friend.unread_count > 0 && (
-                      <div className='bg-red-500 text-white text-xs px-2 py-0.5 rounded-full'>
-                        {friend.unread_count}
-                      </div>
-                    )}
+                      {(() => {
+                        const isCurrentUserUserPhone = profileDataLS?.phone === friend.user_phone
+                        const unreadCount = isCurrentUserUserPhone
+                          ? friend.unread_count_user
+                          : friend.unread_count_friend
+
+                        return unreadCount > 0 ? (
+                          <div className='bg-red-500 text-white text-xs px-2 py-0.5 rounded-full'>
+                            {unreadCount}
+                          </div>
+                        ) : null
+                      })()}
+
                   </div>
                 </div>
               </button>

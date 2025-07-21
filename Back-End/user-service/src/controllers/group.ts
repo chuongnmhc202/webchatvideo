@@ -106,14 +106,14 @@ import {
 
   export const updateGroupLastMessageController = async (req: Request, res: Response) => {
   try {
-    const { groupId, lastMessage } = req.body;
+    const { groupId, lastMessage, sender } = req.body;
     console.log({ groupId, lastMessage })
 
     if (!groupId || !lastMessage) {
       return res.status(400).json({ message: 'Missing groupId or lastMessage' });
     }
 
-    await updateGroupLastMessageService(Number(groupId), lastMessage);
+    await updateGroupLastMessageService(Number(groupId), lastMessage, sender);
 
     return res.status(200).json({ message: 'Last message updated successfully' });
   } catch (error) {
@@ -122,21 +122,15 @@ import {
   }
 };
 
+export const resetGroupUnreadCountController = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const { userPhone } = req.body;
 
-export const resetUnreadCountController = async (req: Request, res: Response) => {
   try {
-    const groupId = Number(req.body.groupId);
-
-
-    if (isNaN(groupId)) {
-      return res.status(400).json({ message: 'Thiếu groupId' });
-    }
-
-    await resetGroupUnreadCountService(groupId);
-
-    return res.status(200).json({ message: 'Reset unread thành công' });
+    await resetGroupUnreadCountService(Number(groupId), userPhone);
+    res.status(200).json({ message: 'Unread count reset successfully' });
   } catch (error: any) {
-    console.error('Lỗi khi reset unread count:', error);
-    return res.status(500).json({ message: error.message || 'Lỗi server' });
+    res.status(400).json({ message: error.message });
   }
 };
+

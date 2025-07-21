@@ -93,7 +93,6 @@ export const sendFriendRequestService = async (
   return 'Đã gửi yêu cầu kết bạn.';
 };
 
-
 export const respondToFriendRequest = async (phone: string, friendPhone: string, action: 'accept' | 'reject') => {
   const friendRelation = await AppDataSource.getRepository(Friend)
     .createQueryBuilder('f')
@@ -119,9 +118,6 @@ export const respondToFriendRequest = async (phone: string, friendPhone: string,
   return 'Friend request processed';
 };
 
-
-
-
 export const unfriendUserService = async (userPhone: string, friendPhone: string): Promise<void> => {
   const existingFriendship = await AppDataSource.getRepository(Friend)
     .createQueryBuilder('f')
@@ -142,11 +138,11 @@ export const unfriendUserService = async (userPhone: string, friendPhone: string
   });
 };
 
-
 export const updateFriendLastMessageService = async (
   userPhone: string,
   friendPhone: string,
-  lastMessage: string
+  lastMessage: string,
+  sender: string
 ): Promise<void> => {
   const repo = AppDataSource.getRepository(Friend);
 
@@ -164,14 +160,29 @@ export const updateFriendLastMessageService = async (
 
   relation.last_message = lastMessage;
   relation.last_message_date = new Date();
-  relation.unread_count = relation.unread_count + 1;
+
+
+    // Determine direction of relationship in DB
+  const isSenderUser = sender === relation.user_phone;
+  const isSenderFriend = sender === relation.friend_phone;
+
+
+  if (isSenderUser) {
+    relation.unread_count_friend = (relation.unread_count_friend || 0) + 1;
+  } else if (isSenderFriend) {
+    relation.unread_count_user = (relation.unread_count_user || 0) + 1;
+  } else {
+    throw new Error("Sender does not match any side of the friend relation.");
+  }
+
 
   await repo.save(relation);
 };
 
 export const resetFriendUnreadCountService = async (
   userPhone: string,
-  friendPhone: string
+  friendPhone: string,
+  sender: string
 ): Promise<void> => {
   const repo = AppDataSource.getRepository(Friend);
 
@@ -187,7 +198,16 @@ export const resetFriendUnreadCountService = async (
     throw new Error("Friend relationship not found.");
   }
 
-  relation.unread_count = 0;
+  const isSenderUser = sender === relation.user_phone;
+  const isSenderFriend = sender === relation.friend_phone;
+
+  if (isSenderUser) {
+    relation.unread_count_user = 0;
+  } else if (isSenderFriend) {
+    relation.unread_count_friend = 0;
+  } else {
+    throw new Error("Sender does not match any side of the friend relation.");
+  }
 
   await repo.save(relation);
 };

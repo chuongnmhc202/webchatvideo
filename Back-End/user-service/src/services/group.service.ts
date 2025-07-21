@@ -39,14 +39,23 @@ export const createGroupService = async (input: CreateGroupInput): Promise<Group
 };
 
 export const getGroupsByUserPhone = async (phone: string, name?: string) => {
-  const groups = await AppDataSource.getRepository(GroupMember).find({
-    where: { user_phone: phone },
-    relations: ['group'], // load associated group
-  });
-// Map the results to return only the group data
-const groups1 = groups.map(groupMember => groupMember.group);
-return groups1;
+  const qb = AppDataSource.getRepository(GroupMember)
+    .createQueryBuilder('gm')
+    .innerJoinAndSelect('gm.group', 'g')
+    .where('gm.user_phone = :phone', { phone });
+
+  if (name) {
+    qb.andWhere('g.name LIKE :name', { name: `%${name}%` });
+  }
+
+  const groupMembers = await qb.getMany();
+
+  return groupMembers.map(gm => ({
+    ...gm.group,
+    unread_count: gm.unread_count
+  }));
 };
+
 
 export const getGroupMembersByGroupId = async (groupId: number): Promise<GroupMemberInfo[]> => {
   if (!groupId) {
@@ -122,9 +131,11 @@ export const removeMemberFromGroup = async (groupId: number, userPhone: string):
 
 export const updateGroupLastMessageService = async (
   groupId: number,
-  lastMessage: string
+  lastMessage: string,
+  sender: string
 ): Promise<void> => {
   const groupRepo = AppDataSource.getRepository(Group);
+  const memberRepo = AppDataSource.getRepository(GroupMember);
 
   const group = await groupRepo.findOne({ where: { id: groupId } });
 
@@ -136,17 +147,35 @@ export const updateGroupLastMessageService = async (
   group.last_message_date = new Date();
 
   await groupRepo.save(group);
+
+await memberRepo
+  .createQueryBuilder()
+  .update(GroupMember)
+  .set({ unread_count: () => "unread_count + 1" })
+  .where("group_id = :groupId AND user_phone != :senderPhone", {
+    groupId,
+    senderPhone: sender, // 👈 fix ở đây
+  })
+  .execute();
+
+
 };
 
 
-export const resetGroupUnreadCountService = async (groupId: number): Promise<void> => {
-  const groupRepo = AppDataSource.getRepository(Group);
+export const resetGroupUnreadCountService = async (
+  groupId: number,
+  userPhone: string
+): Promise<void> => {
+  const repo = AppDataSource.getRepository(GroupMember);
 
-  const group = await groupRepo.findOne({ where: { id: groupId } });
-  if (!group) {
-    throw new Error('Group not found');
+  const member = await repo.findOne({
+    where: { group_id: groupId, user_phone: userPhone }
+  });
+
+  if (!member) {
+    throw new Error('Group member not found');
   }
 
-  group.unread_count = 0;
-  await groupRepo.save(group);
+  member.unread_count = 0;
+  await repo.save(member);
 };

@@ -59,14 +59,7 @@ const VideoCall: React.FC = () => {
       },
     });
 
-  const sendSignalMessage = async (message: IMessage) => {
-    try {
-      const response = await axios.post("http://localhost:8181/api/chat/message/send", message);
-      console.log("✅ Message sent:", response.data);
-    } catch (err) {
-      console.error("❌ Failed to send signal message:", err);
-    }
-  };
+
 
   useEffect(() => {
     connectVideoSocket(userId);
@@ -90,19 +83,6 @@ const VideoCall: React.FC = () => {
       }
 
       socket.emit("joinRoom", { roomId: isGroup ? receiverId : roomId, userId, isGroup });
-
-        // 🔽 Send message to chat
-      await sendSignalMessage({
-        sender: callerId || '',
-        receiver: receiverId || '',
-        is_group: isGroup,
-        content_type: 'video_call_signal',
-        type_video_call: type === "sent" ? "offer" : "answer",
-        text: type === "sent" ? "🔴 Cuộc gọi video bắt đầu" : "🔴 Cuộc gọi video tham gia",
-        timestamp: new Date().toISOString(),
-        avt : profileDataLS?.avatar,
-        name: profileDataLS?.name
-      });
     };
 
     init();
@@ -211,32 +191,101 @@ const VideoCall: React.FC = () => {
 
   const remoteStreamCount = Object.keys(remoteStreams).length;
 
+  // Xác định layout theo số lượng
+const renderRemoteVideos = () => {
+  const entries = Object.entries(remoteStreams);
+  const count = entries.length;
+
+  if (count === 1) {
+    // 1 video: full screen
+    return (
+      <div className="w-full h-full">
+        <video
+          autoPlay
+          playsInline
+          ref={(video) => video && (video.srcObject = entries[0][1])}
+          className="w-full h-full object-cover rounded-lg"
+        />
+      </div>
+    );
+  }
+
+  if (count === 2) {
+    return (
+      <div className="grid grid-cols-2 gap-2 h-full">
+        {entries.map(([peerId, stream]) => (
+          <div key={peerId} className="w-full h-full bg-black rounded-lg overflow-hidden">
+            <video
+              autoPlay
+              playsInline
+              ref={(video) => video && (video.srcObject = stream)}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (count === 3) {
+    return (
+      <div className="grid grid-rows-2 gap-2 h-full">
+        <div className="grid grid-cols-2 gap-2">
+          {entries.slice(0, 2).map(([peerId, stream]) => (
+            <div key={peerId} className="w-full h-full bg-black rounded-lg overflow-hidden">
+              <video
+                autoPlay
+                playsInline
+                ref={(video) => video && (video.srcObject = stream)}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center h-full">
+          <div className="w-1/2 h-full bg-black rounded-lg overflow-hidden">
+            <video
+              autoPlay
+              playsInline
+              ref={(video) => video && (video.srcObject = entries[2][1])}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // >= 4: chia 2x2, 2x3,...
   return (
-<div className="flex flex-col h-screen bg-gray-900 text-white">
-  {/* Video area */}
-  <div className="relative flex-1 p-2 overflow-hidden">
-    {/* Remote grid */}
     <div
       className="grid gap-2 h-full"
       style={{
-        gridTemplateColumns: "repeat(3, 1fr)", // max 3 per row
+        gridTemplateColumns: "repeat(2, 1fr)",
         gridAutoRows: "1fr",
       }}
     >
-      {Object.entries(remoteStreams).map(([peerId, stream]) => (
+      {entries.map(([peerId, stream]) => (
         <div key={peerId} className="w-full h-full bg-black rounded-lg overflow-hidden">
           <video
             autoPlay
             playsInline
-            ref={(video) => {
-              if (video) video.srcObject = stream;
-            }}
+            ref={(video) => video && (video.srcObject = stream)}
             className="w-full h-full object-cover"
           />
         </div>
       ))}
     </div>
+  );
+};
 
+
+  return (
+<div className="flex flex-col h-screen bg-gray-900 text-white">
+  {/* Video area */}
+  <div className="relative flex-1 p-2 overflow-hidden">
+    {/* Remote grid */}
+ {renderRemoteVideos()}
     {/* Local video fixed at bottom right */}
     <video
       ref={localVideoRef}

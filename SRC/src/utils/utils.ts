@@ -55,8 +55,7 @@ export const getIdFromNameId = (nameId: string) => {
 
 export const getAvatarUrl = (avatarName?: string) => {
   if (avatarName) {
-    return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnXgCCqT5PEA8D-Ho8kZk1eIfOsFNcO682sg&s'
-    return `${config.baseUrl}images/${avatarName}`
+    return avatarName;
   }
   return userImage
 }

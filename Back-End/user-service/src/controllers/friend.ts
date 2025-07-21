@@ -47,13 +47,13 @@ import {
 
   export const updateFriendLastMessageController = async (req: Request, res: Response) => {
   try {
-    const { userPhone, friendPhone, lastMessage } = req.body
+    const { userPhone, friendPhone, lastMessage, sender } = req.body
 
     if (!userPhone || !friendPhone || !lastMessage) {
       return res.status(400).json({ message: 'Missing required fields: userPhone, friendPhone, lastMessage' })
     }
 
-    await updateFriendLastMessageService(userPhone, friendPhone, lastMessage)
+    await updateFriendLastMessageService(userPhone, friendPhone, lastMessage, sender)
 
     return res.status(200).json({ message: 'Cập nhật tin nhắn thành công.' })
   } catch (error) {
@@ -64,13 +64,13 @@ import {
 
 export const resetUnreadCountController = async (req: Request, res: Response) => {
   try {
-    const { userPhone, friendPhone } = req.body;
+    const { userPhone, friendPhone, sender } = req.body;
 
     if (!userPhone || !friendPhone) {
       return res.status(400).json({ message: 'userPhone và friendPhone là bắt buộc.' });
     }
 
-    await resetFriendUnreadCountService(userPhone, friendPhone);
+    await resetFriendUnreadCountService(userPhone, friendPhone, sender);
 
     return res.status(200).json({ message: 'Unread count reset thành công.' });
   } catch (error) {

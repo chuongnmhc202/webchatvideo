@@ -6,6 +6,7 @@ import { User } from 'src/types/user.type'
 import { toast } from 'react-toastify'
 import friendApi from 'src/apis/friend.api'
 import { useSocketContext } from 'src/contexts/SocketContext';
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
   product: ProductType
@@ -15,6 +16,8 @@ interface Props {
 export default function UserComponent({ product, profileDataLS }: Props) {
   const [isSending, setIsSending] = useState(false)
   const [isUnfriend, setIsUnfriend] = useState(false)
+    const navigate = useNavigate()
+  
 
   const { socketReady, onlineUsers } = useSocketContext();
 
@@ -59,6 +62,12 @@ export default function UserComponent({ product, profileDataLS }: Props) {
     } finally {
       setIsSending(false)
     }
+  }
+
+
+    const handleClickNotification = async (purchase: string) => {
+    console.log(purchase)
+    navigate('/profile/' + purchase)
   }
 
 
@@ -108,7 +117,7 @@ export default function UserComponent({ product, profileDataLS }: Props) {
               >
                 🔍 {isSending ? 'Đang gửi...' : 'Kết bạn'}
               </button>}
-                <button className='block w-full px-4 py-1 hover:bg-gray-100'>👤 Trang cá nhân</button>
+                <button onClick={() => handleClickNotification(product.phone || '0')} className='block w-full px-4 py-1 hover:bg-gray-100'>👤 Trang cá nhân</button>
               </div>
             }
           >

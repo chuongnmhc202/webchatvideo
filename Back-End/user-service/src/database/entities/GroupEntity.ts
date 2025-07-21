@@ -18,9 +18,6 @@
     @Column({ type: "text", nullable: true })
     last_message: string;
 
-    @Column({ type: 'int', default: 0 })
-    unread_count: number;
-
     @Column({ type: "datetime", precision: 3, nullable: true })
     last_message_date: Date;
 

@@ -42,24 +42,6 @@ export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) 
 
   const [mediaPreview, setMediaPreview] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
   const [isSending, setIsSending] = useState(false);
-
-
-function groupMessagesByDate(messages: IMessage[]): GroupedMessages[] {
-  const grouped: { [date: string]: IMessage[] } = {};
-
-  messages.forEach((msg) => {
-    const dateKey = moment(msg.timestamp).format("YYYY-MM-DD");
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = [];
-    }
-    grouped[dateKey].push(msg);
-  });
-
-  return Object.entries(grouped).map(([date, messages]) => ({
-    date,
-    messages,
-  }));
-}
   
 
   const { messagesData, userData, groupResponse } = useMessages();
@@ -225,7 +207,8 @@ const handleScroll = async () => {
       try {
         const response = await axios.post('http://localhost:8180/api/user/friend/friend/unread/reset', {
           userPhone,
-          friendPhone
+          friendPhone,
+          sender: PhoneSender
         });
         return response.data;
       } catch (error) {
@@ -234,8 +217,8 @@ const handleScroll = async () => {
       }
     } else {
       try {
-        const response = await axios.put('http://localhost:8180/api/user/group/group/member/unread', {
-          groupId
+        const response = await axios.put(`http://localhost:8180/api/user/group/group/member/unread/${groupId}`, {
+          userPhone: PhoneSender
         });
         return response.data;
       } catch (error) {
@@ -372,11 +355,36 @@ const handleScroll = async () => {
     }
   };
 
-  const handleVideoCall = (callerId: string, receiverId: string) => {
+  const sendSignalMessage = async (message: IMessage) => {
+    try {
+      const response = await axios.post("http://localhost:8181/api/chat/message/send", message);
+      console.log("✅ Message sent:", response.data);
+    } catch (err) {
+      console.error("❌ Failed to send signal message:", err);
+    }
+  };
+
+  const handleVideoCall = async (callerId: string, receiverId: string) => {
     if (!socket) return
     if (socket) {
 
+
       if (selectedCategory == '1') {
+        
+              await sendSignalMessage({
+              sender: callerId || '',
+              receiver: receiverId || '',
+              is_group: false,
+              content_type: 'video_call_signal',
+              type_video_call: "offer",
+              text: "🔴 Cuộc gọi video bắt đầu",
+              timestamp: new Date().toISOString(),
+              avt : profileDataLS?.avatar,
+              name: profileDataLS?.name
+            });
+
+
+
         const phones = [callerId, receiverId].sort();
         const roomId = `room${phones[0]}${phones[1]}`;
         const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent&isGroup=0`;
@@ -386,7 +394,9 @@ const handleScroll = async () => {
           roomId,
           callerId,
           receiverId,
-          isGroup: 0
+          isGroup: 0,
+          name: profileDataLS?.name,
+          avt: profileDataLS?.avatar
         });
   
         window.open(
@@ -397,6 +407,18 @@ const handleScroll = async () => {
 
       } else {
 
+            await sendSignalMessage({
+              sender: callerId || '',
+              receiver: receiverId || '',
+              is_group: true,
+              content_type: 'video_call_signal',
+              type_video_call: "offer",
+              text: "🔴 Cuộc gọi video bắt đầu",
+              timestamp: new Date().toISOString(),
+              avt : profileDataLS?.avatar,
+              name: profileDataLS?.name
+            });
+
         const phones = [callerId, receiverId].sort();
         const roomId = `room${phones[0]}${phones[1]}`;
         const url = `/call?roomId=${roomId}&callerId=${callerId}&receiverId=${receiverId}&type=sent&isGroup=1`;
@@ -406,7 +428,9 @@ const handleScroll = async () => {
           roomId,
           callerId,
           receiverId,
-          isGroup: 1
+          isGroup: 1,
+          name: profileDataLS?.name,
+          avt: profileDataLS?.avatar
         });
   
         window.open(
@@ -431,9 +455,9 @@ const handleScroll = async () => {
   <MdChat className="text-2xl text-gray-600" />
   {/* {groupResponse ? `Nhóm: ${groupResponse.name}` : `Bạn: ${userData?.user.name}`} */}
   {groupResponse?.name
-  ? `Nhóm: ${groupResponse.name}`
+  ? `${groupResponse.name}`
   : userData?.user?.name
-    ? `Bạn: ${userData.user.name}`
+    ? `${userData.user.name}`
     : ""}
 
 </span>

@@ -51,7 +51,8 @@ export class MessageService {
         await axios.post(FRIEND_MESSAGE_ENDPOINT, {
           userPhone: savedMessage.sender,
           friendPhone: savedMessage.receiver,
-          lastMessage: lastMessage // hoặc message.text, tuỳ interface bạn định nghĩa
+          lastMessage: lastMessage, // hoặc message.text, tuỳ interface bạn định nghĩa
+          sender: savedMessage.sender
         });
       } else {
         console.log({
@@ -60,7 +61,8 @@ export class MessageService {
         })
           await axios.put(GROUP_MESSAGE_ENDPOINT, {
           groupId: messageData.receiver,
-          lastMessage: lastMessage // hoặc message.text, tuỳ interface bạn định nghĩa
+          lastMessage: lastMessage, // hoặc message.text, tuỳ interface bạn định nghĩa
+          sender: messageData.sender
         });
       }
 
