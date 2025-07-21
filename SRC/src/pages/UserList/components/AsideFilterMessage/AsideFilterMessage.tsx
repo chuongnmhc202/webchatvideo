@@ -15,9 +15,11 @@ import { GetMessagesQuery } from 'src/types/utils.type'
 import { useSocketContext } from 'src/contexts/SocketContext';
 interface AsideFilterMessageProps {
   selectedCategory: string
+  isScreenSM: boolean;
+  setIsScreenSM: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function AsideFilter({ selectedCategory }: AsideFilterMessageProps) {
+export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenSM }: AsideFilterMessageProps) {
   const { t } = useTranslation('home')
   const { setMessagesData, setUserData, setGroupResponse } = useMessages()
 
@@ -79,8 +81,9 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
   }
 
   return (
-    <div className='h-full flex flex-col bg-white p-4 shadow-md rounded-md border'>
-    <div className='sticky top-0 bg-white z-10'>
+    <div className='flex h-full flex-col bg-white p-4 shadow-md rounded-md border'>
+      <div className="opacity-0">FIXED</div>
+    <div className='bg-white z-10'>
 
       <Link to={path.home} className='flex items-center font-bold'>
         <TfiMenuAlt className='mr-3 h-4 w-3 fill-current' />
@@ -92,7 +95,7 @@ export default function AsideFilter({ selectedCategory }: AsideFilterMessageProp
         type='text'
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
-        placeholder='Tìm kiếm bạn bè...'
+        placeholder='   Tìm kiếm bạn bè...'
         className='mb-4 w-full p-3 border rounded-md bg-gray-100 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 transition-all ease-in-out duration-200'
         style={{ boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}
       />

@@ -122,7 +122,7 @@ export default function SortUserList({ queryConfig, pageSize }: Props) {
       {/* Pagination */}
       <div className='max-w-screen-xl mx-auto mt-6 px-4 flex items-center justify-between gap-3'>
         <div className='text-sm text-gray-600'>
-          <span className='text-orange-500 font-semibold'>{page}</span> / <span>{pageSize}</span>
+          <span className='text-orange-500 ml-8 font-semibold'>{page}</span> / <span>{pageSize}</span>
         </div>
         <div className='flex gap-1'>
           {page === 1 ? (

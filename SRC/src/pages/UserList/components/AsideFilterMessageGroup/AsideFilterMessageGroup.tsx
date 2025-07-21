@@ -21,6 +21,8 @@ import { MdGroupAdd, MdSettings, MdPeopleAlt, MdPersonAdd, MdExitToApp } from 'r
 
 interface AsideFilterMessageProps {
   selectedCategory: string
+  isScreenSM: boolean;
+  setIsScreenSM: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface CreateGroupBody {
@@ -29,7 +31,7 @@ interface CreateGroupBody {
 }
 
 
-export default function AsideFilterMessageGroup({ selectedCategory }: AsideFilterMessageProps) {
+export default function AsideFilterMessageGroup({ selectedCategory, isScreenSM, setIsScreenSM }: AsideFilterMessageProps) {
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
   const { setMessagesData, setUserData, setGroupResponse } = useMessages();
 
@@ -223,7 +225,8 @@ export default function AsideFilterMessageGroup({ selectedCategory }: AsideFilte
 
 
   return (
-<div className="sticky left-[0rem] top-[0rem]  z-10 h-full overflow-y-auto bg-white p-4 shadow-md rounded-md border">
+<div className="z-10 h-full overflow-y-auto bg-white p-4 shadow-md rounded-md border">
+      <div className="opacity-0">FIXED</div>
 
       <Link to={path.home} className='flex items-center font-bold'>
         <TfiMenuAlt className='mr-3 h-4 w-3 fill-current' />
@@ -236,7 +239,7 @@ export default function AsideFilterMessageGroup({ selectedCategory }: AsideFilte
         type="text"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
-        placeholder="Tìm kiếm Nhóm ..."
+        placeholder="  Tìm kiếm Nhóm ..."
         className="mb-4 w-full p-3 border rounded-md bg-gray-100 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 transition-all ease-in-out duration-200"
         style={{
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',

@@ -16,10 +16,11 @@ import axios from 'axios';
 import { useDebounce } from 'use-debounce';
 import { message } from "antd";
 import Popover from '../../../../components/Popover'
-
+import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 interface AsideFilterMessageProps {
   selectedCategory: string;
+   onBack: () => void
 }
 
 type GroupedMessages = {
@@ -27,7 +28,7 @@ type GroupedMessages = {
   messages: IMessage[];
 };
 
-export default function ChatBox({ selectedCategory  }: AsideFilterMessageProps) {
+export default function ChatBox({ selectedCategory, onBack  }: AsideFilterMessageProps) {
   const { socketReady, socket } = useSocketContext();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [file, setFile] = useState<File>();
@@ -447,10 +448,16 @@ const handleScroll = async () => {
   
 
   return (
-<div className='h-full flex flex-col bg-white p-4 shadow-md rounded-md border'>
+<div className='flex flex-col bg-white p-4 shadow-md rounded-md border'>
 
-    <div className="h-screen flex flex-col  rounded-xl shadow-md overflow-hidden bg-white">
+    <div className="h-[calc(100vh-80px)] flex flex-col  rounded-xl shadow-md overflow-hidden bg-white">
       <div className="flex justify-between items-center p-4 bg-green-50 -b font-semibold text-gray-800">
+                <button
+          onClick={onBack}
+          className='block lg:hidden text-blue-500 bg-gray-200 p-2 rounded-full'
+        >
+          <AiOutlineArrowLeft size={20} />
+        </button>
 <span className="flex items-center gap-2 text-orange-200">
   <MdChat className="text-2xl text-gray-600" />
   {/* {groupResponse ? `Nhóm: ${groupResponse.name}` : `Bạn: ${userData?.user.name}`} */}

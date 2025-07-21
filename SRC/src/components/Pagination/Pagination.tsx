@@ -98,7 +98,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
   }
   return (
     <div className='mt-6 flex flex-wrap justify-center'>
-      {page === 1 ? (
+      {page === 0 ? (
         <span className='mx-2 cursor-not-allowed rounded border bg-white/60 px-3 py-2  shadow-sm'>Prev</span>
       ) : (
         <Link
@@ -106,13 +106,14 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
             pathname: path.home,
             search: createSearchParams({
               ...queryConfig,
-              page: (page - 1).toString()
+              page: (page - 1).toString() // sẽ là 0 nếu page === 1
             }).toString()
           }}
-          className='mx-2 cursor-pointer rounded border bg-white px-3 py-2  shadow-sm'
+          className='mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm'
         >
           Prev
         </Link>
+
       )}
 
       {renderPagination()}
