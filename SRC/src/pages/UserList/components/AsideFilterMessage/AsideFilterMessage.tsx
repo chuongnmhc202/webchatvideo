@@ -17,9 +17,11 @@ interface AsideFilterMessageProps {
   selectedCategory: string
   isScreenSM: boolean;
   setIsScreenSM: React.Dispatch<React.SetStateAction<boolean>>
+  isChatBox: boolean;
+  setIsChatBox: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenSM }: AsideFilterMessageProps) {
+export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenSM, isChatBox, setIsChatBox }: AsideFilterMessageProps) {
   const { t } = useTranslation('home')
   const { setMessagesData, setUserData, setGroupResponse } = useMessages()
 
@@ -72,6 +74,9 @@ export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenS
     setMessagesData(data)
     setUserData(friend)
     setGroupResponse(null)
+    if (isScreenSM){
+      setIsChatBox(true)
+    }
   }
 
 

@@ -20,7 +20,8 @@ import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 interface AsideFilterMessageProps {
   selectedCategory: string;
-   onBack: () => void
+    isChatBox: boolean;
+  setIsChatBox: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type GroupedMessages = {
@@ -28,7 +29,7 @@ type GroupedMessages = {
   messages: IMessage[];
 };
 
-export default function ChatBox({ selectedCategory, onBack  }: AsideFilterMessageProps) {
+export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox  }: AsideFilterMessageProps) {
   const { socketReady, socket } = useSocketContext();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [file, setFile] = useState<File>();
@@ -453,7 +454,7 @@ const handleScroll = async () => {
     <div className="h-[calc(100vh-80px)] flex flex-col  rounded-xl shadow-md overflow-hidden bg-white">
       <div className="flex justify-between items-center p-4 bg-green-50 -b font-semibold text-gray-800">
                 <button
-          onClick={onBack}
+          onClick={() => setIsChatBox(false)}
           className='block lg:hidden text-blue-500 bg-gray-200 p-2 rounded-full'
         >
           <AiOutlineArrowLeft size={20} />

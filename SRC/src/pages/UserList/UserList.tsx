@@ -52,11 +52,15 @@ export default function UserList() {
   }
 
   const [isScreenSM, setIsScreenSM] = useState(window.innerWidth < 1024);
+  const [isChatBox, setIsChatBox] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const isSmall = window.innerWidth < 1024;
       setIsScreenSM(isSmall);
+      if (!isSmall){
+        setIsChatBox(false)
+      }
       console.log('Chiều rộng:', window.innerWidth, '| isScreenSM:', isSmall);
     };
 
@@ -66,6 +70,7 @@ export default function UserList() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
 
   return (
     <MessagesProvider>
@@ -90,15 +95,22 @@ export default function UserList() {
 
 
               {(selectedCategory === '1' || selectedCategory === '2') && (
-                <div className={isScreenSM ? 'col-span-11' : 'col-span-3'}>
-                  {selectedCategory === '1' && <AsideFilterMessage selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM}/>}
-                  {selectedCategory === '2' && <AsideFilterMessageGroup selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM}/>}
+                <div
+                  className={`${isScreenSM ? 'col-span-11' : 'col-span-3'} ${isChatBox ? 'hidden' : ''
+                    }`}
+                >
+
+                  {selectedCategory === '1' && <AsideFilterMessage selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />}
+                  {selectedCategory === '2' && <AsideFilterMessageGroup selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />}
                 </div>
               )}
+
+
               <div
-                className={`${selectedCategory === '3' ? 'col-span-11' : 'col-span-8'
-                  } ${isScreenSM && selectedCategory !== '3' ? 'hidden' : ''}`}
+                className={`${selectedCategory === '3' ? 'col-span-11' : isChatBox ? 'col-span-11' : 'col-span-8'} ${isScreenSM  && ['1', '2'].includes(selectedCategory) &&!isChatBox ? 'hidden' : ''
+                  }`}
               >
+
                 {selectedCategory === '3' ? (
                   productsData ? (
                     <div className='h-screen overflow-hidden p-4'>
@@ -121,7 +133,7 @@ export default function UserList() {
                   ) : null
                 ) : (selectedCategory === '1' || selectedCategory === '2') ? (
                   <>
-                    <ChatBox selectedCategory={selectedCategory} onBack={() => setIsMobileChatOpen(false)} />
+                    <ChatBox selectedCategory={selectedCategory} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />
                   </>
                 ) : (
                   <div className='fixed inset-0 flex flex-col items-center justify-center bg-white p-4 text-center'>
