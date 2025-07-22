@@ -25,8 +25,10 @@ export default function SocketListeners() {
     });
 
   const sendSignalMessage = async (message: IMessage) => {
+
     try {
-      const response = await axios.post("http://localhost:8181/api/chat/message/send", message);
+      const apiUrl = import.meta.env.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
+      const response = await axios.post(`${apiUrl}/api/chat/message/send`, message);
       console.log("✅ Message sent:", response.data);
     } catch (err) {
       console.error("❌ Failed to send signal message:", err);

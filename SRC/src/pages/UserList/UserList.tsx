@@ -37,8 +37,6 @@ export default function UserList() {
     keepPreviousData: true,
     staleTime: 3 * 60 * 1000
   })
-  // console.log(productsData?.data.data)
-
 
   const categoriesDataFEATURE = [
     { _id: '1', name: 'Bạn bè', icon: '' },
@@ -142,6 +140,7 @@ export default function UserList() {
                       alt='Welcome illustration'
                       className='max-w-full w-3/4 md:w-1/2 lg:w-1/3 rounded-lg shadow-lg transition-transform hover:scale-105'
                     />
+                    
                     <h2 className='mt-6 text-2xl font-bold text-gray-700'>Chào mừng bạn đến với hệ thống trò chuyện</h2>
                     <p className='mt-2 text-gray-500 text-base'>Vui lòng chọn một danh mục để bắt đầu trò chuyện</p>
                   </div>

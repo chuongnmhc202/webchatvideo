@@ -204,10 +204,10 @@ const handleScroll = async () => {
 
   const resetUnreadCount = async (userPhone: string, friendPhone: string, groupId :string) => {
 
+    const apiUrl = import.meta.env.VITE_API_URL_DEV_USER ?? 'http://localhost:8180';
     if (selectedCategory === '1') {
-
       try {
-        const response = await axios.post('http://localhost:8180/api/user/friend/friend/unread/reset', {
+        const response = await axios.post(`${apiUrl}/api/user/friend/friend/unread/reset`, {
           userPhone,
           friendPhone,
           sender: PhoneSender
@@ -219,7 +219,7 @@ const handleScroll = async () => {
       }
     } else {
       try {
-        const response = await axios.put(`http://localhost:8180/api/user/group/group/member/unread/${groupId}`, {
+        const response = await axios.put(`${apiUrl}/api/user/group/group/member/unread/${groupId}`, {
           userPhone: PhoneSender
         });
         return response.data;
@@ -358,8 +358,9 @@ const handleScroll = async () => {
   };
 
   const sendSignalMessage = async (message: IMessage) => {
+    const apiUrl = import.meta.env.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
     try {
-      const response = await axios.post("http://localhost:8181/api/chat/message/send", message);
+      const response = await axios.post(`${apiUrl}/api/chat/message/send`, message);
       console.log("✅ Message sent:", response.data);
     } catch (err) {
       console.error("❌ Failed to send signal message:", err);

@@ -22,12 +22,12 @@ export class Http {
     // because when getdata from localstorage(hard drive) ALWAYS SLOWER than get accessToken from (Ram)
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
+    const apiUrl = import.meta.env.VITE_API_URL_DEV_USER ?? 'http://localhost:8180';
+    console.log('API URL:', apiUrl);
     this.instance = axios.create({
-      baseURL: 'http://localhost:8180/',
+      baseURL: apiUrl,
       headers: {
         'Content-Type': 'application/json'
-        // 'expire-access-token': 10,
-        // 'expire-refresh-token': 25
       }
     })
     // Add a request interceptor

@@ -1,20 +1,28 @@
 # Stage 1: Build
-FROM node:18-alpine AS build
+FROM node:18-alpine AS builder
+
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN npm ci
-
+COPY tsconfig.json ./
+COPY vite.config.ts ./
 COPY . .
 
+# 👇 Copy file env
+COPY .env.production .env
+
+RUN npm install
 RUN npm run build
 
-# Stage 2: Run
-FROM nginx:alpine
+# Stage 2: Serve with nginx
+FROM nginx:stable-alpine
 
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy built files from previous stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Replace default nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 3000
+EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]

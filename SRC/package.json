@@ -29,6 +29,7 @@
     "clsx": "^1.2.1",
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.5",
+    "dotenv-webpack": "^8.1.1",
     "firebase": "^11.6.0",
     "framer-motion": "^9.0.4",
     "html-to-text": "^9.0.5",

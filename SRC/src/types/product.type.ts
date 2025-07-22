@@ -36,3 +36,9 @@ export interface FriendTListConfig {
 export interface GroupTListConfig {
   name?: string
 }
+
+export type Product = {
+  id: string;
+  name: string;
+  price: number;
+};

@@ -5,8 +5,9 @@ let socket: Socket | null = null;
 let heartbeatInterval: NodeJS.Timeout | null = null;
 
 export const connectSocket = (userId: string) => {
+  const apiUrl = import.meta.env.VITE_API_URL_DEV_SOCKET ?? 'http://localhost:8182';
   if (!socket || !socket.connected) {
-    socket = io("http://localhost:8182", {
+    socket = io(apiUrl, {
       query: { userId },
       transports: ["websocket"],
     });
