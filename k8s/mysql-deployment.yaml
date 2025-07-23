@@ -30,9 +30,14 @@ spec:
         volumeMounts:
         - name: mysql-pv
           mountPath: /var/lib/mysql
+        - name: initdb
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: mysql-pv
         emptyDir: {}   # Dùng EmptyDir demo local, production thì xài PVC (PersistentVolumeClaim)
+      - name: initdb
+        configMap:
+          name: mysql-initdb
 
 ---
 
