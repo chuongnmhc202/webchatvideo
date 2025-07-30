@@ -23,6 +23,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Replace default nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
+COPY ./public/env-config.js /usr/share/nginx/html/env-config.js
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

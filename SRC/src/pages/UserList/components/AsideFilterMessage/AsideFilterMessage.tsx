@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import friendApi from 'src/apis/friend.api'
 import { useMessages } from 'src/contexts/MessagesContext'
-import { connectSocket, disconnectSocket, getSocket } from 'src/socket/socket'
 import { User, friends } from 'src/types/user.type'
 import { FriendTListConfig } from 'src/types/product.type'
 import { GetMessagesQuery } from 'src/types/utils.type'
@@ -40,12 +39,12 @@ export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenS
 
   const phone = profileDataLS?.phone
 
-  const queryConfig: FriendTListConfig = { name: searchName }
+  const queryConfig: FriendTListConfig = { name: searchName, type: selectedCategory}
 
   const { data: friendList } = useQuery({
     queryKey: ['friendList', phone, queryConfig],
     queryFn: () => friendApi.getFriendList(queryConfig, phone as string),
-    enabled: selectedCategory === '1' && !!phone
+    enabled: (selectedCategory === '1' || selectedCategory === '4') && !!phone
   })
 
   useEffect(() => {
@@ -88,12 +87,14 @@ export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenS
   return (
     <div className='flex h-full flex-col bg-white p-4 shadow-md rounded-md border'>
       <div className="opacity-0">FIXED</div>
-    <div className='bg-white z-10'>
+    <div className='bg-white z-10 h-[calc(100vh-100px)] overflow-y-auto'>
 
-      <Link to={path.home} className='flex items-center font-bold'>
-        <TfiMenuAlt className='mr-3 h-4 w-3 fill-current' />
-        {t('aside filter.filter friend group')}
-      </Link>
+    <Link to={path.home} className='flex items-center font-bold'>
+      <TfiMenuAlt className='mr-3 h-4 w-3 fill-current' />
+      {selectedCategory === '1' && 'Danh sách bạn bè'}
+      {selectedCategory === '4' && 'Tin nhắn từ người lạ'}
+    </Link>
+
       <div className='mt-4 mb-2 h-[1px] bg-gray-300' />
 
       <input
@@ -105,7 +106,7 @@ export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenS
         style={{ boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}
       />
 
-      <ul className='pl-2'>
+      <ul className='pl-2 '>
         {friendList?.data.friends.map((friend) => {
           const isActive = friend.user.phone === selectedFriendId
           const latestMessage = {
@@ -177,8 +178,12 @@ export default function AsideFilter({ selectedCategory, isScreenSM, setIsScreenS
               </button>
             </li>
           )
+
+
         })}
       </ul>
+
+
     </div>
     </div>
   )

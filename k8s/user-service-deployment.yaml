@@ -4,7 +4,7 @@ metadata:
   name: user-service
   namespace: microservices
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: user-service
@@ -22,13 +22,28 @@ spec:
             - name: NODE_ENV
               value: development
             - name: DB_HOST
-              value: mysql
+              value: mysql.microservices.svc.cluster.local
             - name: DB_USERNAME
               value: rootuser
             - name: DB_PASSWORD
               value: pass
             - name: DB_DATABASE
               value: user
+            - name: DB_PORT
+              value: "3306"
+            - name: CHAT_SERVICE_BASE_URL
+              value: http://chat-service
+            - name: CLIENT_ORIGIN
+              value: http://localhost
+            - name: PORT
+              value: "8180"
+          resources:
+              limits:
+                memory: 256Mi
+                cpu: 300m
+              requests:
+                memory: 128Mi
+                cpu: 100m
 
 ---
 

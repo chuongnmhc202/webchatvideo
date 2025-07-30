@@ -27,7 +27,8 @@ export default function SocketListeners() {
   const sendSignalMessage = async (message: IMessage) => {
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
+      const env = (window as any).env;
+      const apiUrl = env?.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
       const response = await axios.post(`${apiUrl}/api/chat/message/send`, message);
       console.log("✅ Message sent:", response.data);
     } catch (err) {

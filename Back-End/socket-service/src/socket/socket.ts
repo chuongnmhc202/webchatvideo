@@ -2,7 +2,7 @@
 import { Server } from "socket.io";
 import { createClient } from "redis";
 import { createAdapter } from "@socket.io/redis-adapter";
-import { IMessage } from "../types/index";
+import { IMessage, IMessageExtended } from "../types/index";
 import { SendMessage } from "../services/broker.service";
 import axios from 'axios';
 import * as dotenv from "dotenv";
@@ -121,9 +121,21 @@ export async function initializeSocketServer(io: Server) {
     });
 
 
-    socket.on("sendMessage", async (message: IMessage) => {
+    socket.on("sendMessage", async (message: IMessageExtended) => {
       console.log("📩 Message received:", message);
       await SendMessage(message);
+
+      if (message.typeSend === "1") {
+        try {
+          await axios.post(`${USER_SERVICE_BASE_URL}/api/user/friend/friend`, {
+            senderPhone: message.sender,
+            receiverPhone: message.receiver,
+            type: "1",
+          });
+        } catch (error) {
+          console.error("❌ Failed to send friend request:", error);
+        }
+      }
 
       if (message.is_group) {
         // group message
@@ -140,7 +152,7 @@ export async function initializeSocketServer(io: Server) {
         } else {
           message.status = "sent";
           // nếu người dùng off thì tạo thông báo
-            try {
+          try {
             await axios.post(`${CHAT_SERVICE_BASE_URL}/api/chat/notification/send`, {
               type: "message",
               content: `${message.sender} đã gửi bạn một tin nhắn.`,
@@ -154,29 +166,57 @@ export async function initializeSocketServer(io: Server) {
         }
       }
 
-
-
     });
 
     socket.on("join-room-call-sent", async (payload: { roomId: string, callerId: string, receiverId: string, isGroup: number, name: string, avt: string }) => {
-      const { roomId, callerId, receiverId, isGroup, name, avt} = payload;
+      const { roomId, callerId, receiverId, isGroup, name, avt } = payload;
       console.log("📩 Message received:", { roomId, callerId, receiverId, isGroup });
-      
+
 
 
       if (isGroup == 0) {
         const targetSocketIds = await getReceiverSocketIds(receiverId);
-  
+
         for (const sid of targetSocketIds) {
-          io.to(sid).emit("join-room-call-receive",  {roomId, callerId, receiverId, isGroup, name, avt});
+          io.to(sid).emit("join-room-call-receive", { roomId, callerId, receiverId, isGroup, name, avt });
         }
       } else {
         const groupId = receiverId; // receiver chính là groupId nếu là nhóm
-        socket.to(groupId.toString()).emit("join-room-call-receive", {roomId, callerId, receiverId, isGroup, name, avt});
+        socket.to(groupId.toString()).emit("join-room-call-receive", { roomId, callerId, receiverId, isGroup, name, avt });
       }
 
     });
 
+    socket.on("typing", async (payload: { sender: string, receiver: string, type: string, avt: string }) => {
+      const { sender, receiver, type, avt } = payload;
+      if (type == "1") {
+        // group typing
+        socket.to(receiver.toString()).emit("typing", { sender, receiver, type, avt });
+      } else {
+        const receiverSocketIds = await getReceiverSocketIds(receiver);
+        if (receiverSocketIds.length > 0) {
+          for (const sid of receiverSocketIds) {
+            io.to(sid).emit("typing", { sender, receiver, type, avt });
+          }
+        }
+      }
+    });
+
+    // Stop Typing
+    socket.on("stop-typing", async (payload: { sender: string, receiver: string, type: boolean, avt: string }) => {
+      const { sender, receiver, type, avt } = payload;
+      if (type) {
+        // group typing
+        socket.to(receiver.toString()).emit("stop-typing", { sender, receiver, type, avt });
+      } else {
+        const receiverSocketIds = await getReceiverSocketIds(receiver);
+        if (receiverSocketIds.length > 0) {
+          for (const sid of receiverSocketIds) {
+            io.to(sid).emit("stop-typing", { sender, receiver, type, avt });
+          }
+        }
+      }
+    });
 
 
   });

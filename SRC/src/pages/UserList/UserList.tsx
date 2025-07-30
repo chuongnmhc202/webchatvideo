@@ -41,7 +41,8 @@ export default function UserList() {
   const categoriesDataFEATURE = [
     { _id: '1', name: 'Bạn bè', icon: '' },
     { _id: '2', name: 'Nhóm', icon: '🎁' },
-    { _id: '3', name: 'Tìm kiếm người dùng', icon: '💻' }
+    { _id: '3', name: 'Tìm kiếm người dùng', icon: '💻' },
+    { _id: '4', name: 'Tin nhắn người lạ', icon: '💻' }
   ]
 
 
@@ -92,20 +93,21 @@ export default function UserList() {
               </div>
 
 
-              {(selectedCategory === '1' || selectedCategory === '2') && (
+              {(selectedCategory === '1' || selectedCategory === '2' || selectedCategory === '4') && (
                 <div
                   className={`${isScreenSM ? 'col-span-11' : 'col-span-3'} ${isChatBox ? 'hidden' : ''
                     }`}
                 >
 
                   {selectedCategory === '1' && <AsideFilterMessage selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />}
+                  {selectedCategory === '4' && <AsideFilterMessage selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />}
                   {selectedCategory === '2' && <AsideFilterMessageGroup selectedCategory={selectedCategory} isScreenSM={isScreenSM} setIsScreenSM={setIsScreenSM} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />}
                 </div>
               )}
 
 
               <div
-                className={`${selectedCategory === '3' ? 'col-span-11' : isChatBox ? 'col-span-11' : 'col-span-8'} ${isScreenSM  && ['1', '2'].includes(selectedCategory) &&!isChatBox ? 'hidden' : ''
+                className={`${selectedCategory === '3' ? 'col-span-11' : isChatBox ? 'col-span-11' : 'col-span-8'} ${isScreenSM  && ['1', '2', '4'].includes(selectedCategory) &&!isChatBox ? 'hidden' : ''
                   }`}
               >
 
@@ -119,7 +121,7 @@ export default function UserList() {
                       <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4'>
                         {productsData.data.data.users.map((product: ProductType) => (
                           <div className='col-span-1' key={product.phone}>
-                            <UserComponent product={product} profileDataLS={profileDataLS as User} />
+                            <UserComponent selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} product={product} profileDataLS={profileDataLS as User} />
                           </div>
                         ))}
                       </div>
@@ -129,7 +131,7 @@ export default function UserList() {
                       />
                     </div>
                   ) : null
-                ) : (selectedCategory === '1' || selectedCategory === '2') ? (
+                ) : (selectedCategory === '1' || selectedCategory === '2' || selectedCategory === '4') ? (
                   <>
                     <ChatBox selectedCategory={selectedCategory} isChatBox={isChatBox} setIsChatBox={setIsChatBox} />
                   </>

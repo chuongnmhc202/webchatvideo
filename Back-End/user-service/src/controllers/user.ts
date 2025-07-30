@@ -122,7 +122,7 @@ export const updateUserStatusByPhone = async (req: Request, res: Response): Prom
 export const getPaginatedUsers = async (req: Request, res: Response): Promise<void> => {
   const { phone } = req.params;
   const page = parseInt(req.query.page as string) || 0;
-  const pageSize = parseInt(req.query.pageSize as string) || 5;
+  const pageSize = parseInt(req.query.pageSize as string) || 8;
   const name = req.query.name as string | undefined;
   const sortBy = req.query.sort_by as string | undefined; // Add sort_by query parameter
   console.log(phone, page, pageSize, name, sortBy)
@@ -145,12 +145,13 @@ export const getUserFriendsController = async (req: Request, res: Response) => {
   try {
     const { phone } = req.params;
     const name = req.query.name as string | undefined;
+    const type = req.query.type as string | '0';
 
     if (!phone || typeof phone !== 'string') {
       return res.status(400).json({ message: 'Missing or invalid phone parameter' });
     }
 
-    const friends = await getUserFriendsServiceControll(phone,name);
+    const friends = await getUserFriendsServiceControll(phone,name, type);
 
     return res.status(200).json({ friends });
   } catch (error: any) {

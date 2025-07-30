@@ -34,3 +34,7 @@ export enum OrderEvent {
     sdpMLineIndex?: string;
   }
   
+
+  export interface IMessageExtended extends IMessage {
+  typeSend: string;
+}

@@ -4,7 +4,7 @@ metadata:
   name: socket-service
   namespace: microservices
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: socket-service
@@ -28,14 +28,22 @@ spec:
             - name: USER_SERVICE_BASE_URL
               value: http://user-service
             - name: CLIENT_ORIGIN
-              value: http://localhost:3000
+              value: http://localhost
             - name: GROUP_ID
               value: socket-service-group
             - name: CLIENT_ID
               value: socket-service
             - name: REDIS_URL
               value: redis://redis:6379
-
+            - name: CHAT_SERVICE_BASE_URL
+              value: http://chat-service
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: 500m
+        requests:
+          memory: 256Mi
+          cpu: 200m
 
 ---
 

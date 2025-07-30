@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { Link } from 'react-router-dom'
 import { Category } from 'src/types/category.type'
 import { useTranslation } from 'react-i18next'
-import { MdMessage, MdGroup, MdPersonSearch, MdCloud, MdCloudQueue, MdCrop, MdCropFree, MdScreenshotMonitor, MdBuild, MdHomeRepairService, MdWork, MdSettings } from 'react-icons/md'
+import { MdMessage,MdMarkEmailUnread, MdGroup, MdPersonSearch, MdCloud, MdCloudQueue, MdCrop, MdCropFree, MdScreenshotMonitor, MdBuild, MdHomeRepairService, MdWork, MdSettings } from 'react-icons/md'
 
 interface Props {
   categories: Category[]
@@ -43,6 +43,7 @@ export default function AsideFilter({ categories, selectedCategory, onChangeCate
 
               let IconComponent = null;
               if (categoryItem._id === '1') IconComponent = MdMessage;
+              else if (categoryItem._id === '4') IconComponent = MdMarkEmailUnread;
               else if (categoryItem._id === '2') IconComponent = MdGroup;
               else if (categoryItem._id === '3') IconComponent = MdPersonSearch;
 

@@ -23,13 +23,21 @@ import axios from "axios";
 const ICE_SERVERS = {
   iceServers: [
     {
-      urls: ["stun:stun.l.google.com:19302"], // STUN Google cho fallback
+      urls: ["stun:stun.l.google.com:19302", "stun:ss-turn1.xirsys.com"], // STUN Google cho fallback
+      
     },
-    // {
-    //   urls: ["turn:42.113.108.195:3478"],
-    //   username: "webrtcuser",
-    //   credential: "yourpassword",
-    // },
+    {
+      username: "WoYy6uWAwk4D__Bl1G_0Q2UXPnZglntrbo21uIAcktSj_RGKrnY7-7XcMt44TuClAAAAAGiDPoBuZ3V5ZW50YW50aGFuaDA3MDlpdA==",
+      credential: "57e09e0c-6930-11f0-a63c-0242ac140004",
+      urls: [
+        "turn:ss-turn1.xirsys.com:80?transport=udp",
+        "turn:ss-turn1.xirsys.com:3478?transport=udp",
+        "turn:ss-turn1.xirsys.com:80?transport=tcp",
+        "turn:ss-turn1.xirsys.com:3478?transport=tcp",
+        "turns:ss-turn1.xirsys.com:443?transport=tcp",
+        "turns:ss-turn1.xirsys.com:5349?transport=tcp",
+      ],
+    },
   ],
 };
 

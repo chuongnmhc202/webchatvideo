@@ -11,7 +11,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
 
 const app:Express = express()
 app.use(cors({
-    origin: CLIENT_ORIGIN,  // Replace with your front-end URL
+    origin: "*",  // Replace with your front-end URL
     methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],  // Allow specific HTTP methods if necessary
     credentials: true,  // Allow cookies or other credentials to be sent
   }));
@@ -23,6 +23,7 @@ AppDataSource.initialize().then(()=>{
     console.log('Database connected')
 }).catch((error)=>{
     console.log('Database connection failed', error)
+    process.exit(1);
 })
 
 const PORT = process.env.PORT || 8180

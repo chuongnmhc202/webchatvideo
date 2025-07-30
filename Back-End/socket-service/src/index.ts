@@ -20,11 +20,11 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.use(cors({
-    origin: CLIENT_ORIGIN,
+    origin: "*",
     credentials: true,
   }));
 
-  app.get("/api/socket", (req, res) => {
+  app.get("/api/socket/check", (req, res) => {
   res.status(200).json({
     message: "socket-service is running"
   });
@@ -33,9 +33,10 @@ async function bootstrap() {
 
   const io = new Server(server, {
     cors: {
-      origin: [CLIENT_ORIGIN],
+      origin: "*",
       credentials: true,
     },
+    path: "/api/socket",
     pingTimeout: 60000,
     pingInterval: 25000,
   });

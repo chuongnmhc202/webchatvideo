@@ -5,6 +5,7 @@ import { User } from 'src/types/user.type'
 import userApi from 'src/apis/user.api'
 import {  useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 const UserP = () => {
     const { phone } = useParams()
@@ -26,7 +27,7 @@ const UserP = () => {
                 onClick={() => navigate('/')}
                 className="m-2 sm:mt-0 px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold shadow"
             >
-                Về trang chủ
+                <AiOutlineArrowLeft size={20} />
             </button>
         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
           <img

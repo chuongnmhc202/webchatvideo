@@ -39,7 +39,8 @@ export default function AsideFilterMessageGroup({ selectedCategory, isScreenSM, 
 
   const [searchName, setSearchName] = useState('')
   const queryConfig: FriendTListConfig = {
-    name: searchName
+    name: searchName,
+    type: "0"
   }
 
   const [groupName, setGroupName] = useState('')
@@ -113,7 +114,8 @@ export default function AsideFilterMessageGroup({ selectedCategory, isScreenSM, 
   );
 
   const queryConfigFriend: FriendTListConfig = {
-    name: searchName
+    name: searchName,
+    type: "0"
   }
 
   const { data: friendList } = useQuery({
@@ -230,7 +232,7 @@ export default function AsideFilterMessageGroup({ selectedCategory, isScreenSM, 
 
 
   return (
-    <div className="z-10 h-full overflow-y-auto bg-white p-4 shadow-md rounded-md border">
+    <div className="z-10 h-[calc(100vh-47px)] overflow-y-auto bg-white p-4 shadow-md rounded-md border">
       <div className="opacity-0">FIXED</div>
 
       <Link to={path.home} className='flex items-center font-bold'>
@@ -278,7 +280,7 @@ export default function AsideFilterMessageGroup({ selectedCategory, isScreenSM, 
         </Popover>
       </div>
 
-      <ul className='pl-2'>
+      <ul className='pl-2 '>
         {groupList?.data.data.map((group) => {
           const isActive = group.id === selectedFriendId
           return (

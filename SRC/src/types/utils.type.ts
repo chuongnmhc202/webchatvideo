@@ -57,6 +57,9 @@ export interface IMessage {
   name?: string;
 }
 
+export interface IMessageExtended extends IMessage {
+  typeSend: string;
+}
 
 export interface GetMessagesQuery {
   sender: string; // Số điện thoại hoặc ID người gửi

@@ -152,16 +152,22 @@ export const getUserFriendsService = async (phone: string, name?: string) => {
 
 
 
-export const getUserFriendsServiceControll = async (phone: string, name?: string) => {
+export const getUserFriendsServiceControll = async (phone: string, name?: string, type?: string) => {
   const nameFilter = name ? `%${name}%` : null;
 
-  const friends = await AppDataSource.getRepository(Friend)
+  const query = await AppDataSource.getRepository(Friend)
     .createQueryBuilder('f')
     .innerJoinAndSelect('f.friend', 'friend')
     .innerJoinAndSelect('f.user', 'user')
-    .where('(f.user_phone = :phone OR f.friend_phone = :phone)', { phone })
-    .andWhere('f.status = :status', { status: 'accepted' })
-    .getMany();
+    .where('(f.user_phone = :phone OR f.friend_phone = :phone)', { phone });
+      // Lọc theo type
+  if (type == "4") {
+    query.andWhere('f.status = :status', { status: 'no' });
+  } else {
+    query.andWhere('f.status = :status', { status: 'accepted' });
+  }
+
+  const friends = await query.getMany();
 
   // Xử lý để trả về đúng user còn lại + last_message + last_message_date
   const result = friends

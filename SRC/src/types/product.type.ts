@@ -31,6 +31,7 @@ export interface UserTListConfig {
 
 export interface FriendTListConfig {
   name?: string
+  type?: string
 }
 
 export interface GroupTListConfig {

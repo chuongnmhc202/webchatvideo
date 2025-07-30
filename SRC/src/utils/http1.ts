@@ -22,7 +22,8 @@ export class Http1 {
     // because when getdata from localstorage(hard drive) ALWAYS SLOWER than get accessToken from (Ram)
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
-    const apiUrl = import.meta.env.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
+    const env = (window as any).env;
+    const apiUrl = env?.VITE_API_URL_DEV_CHAT ?? 'http://localhost:8181';
     console.log('API URL:', apiUrl);
     this.instance = axios.create({
       baseURL: apiUrl,

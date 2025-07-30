@@ -5,7 +5,11 @@ let videoSocket: Socket | null = null;
 
 export function connectVideoSocket(userId: string) {
   if (!videoSocket) {
-    videoSocket = io("ws://localhost:8182/video-socket", {
+    const env = (window as any).env;
+    const apiUrl = env?.VITE_API_URL_DEV_SOCKET ?? 'http://localhost:8182';
+    // http://localhost:3000/
+    videoSocket = io(`${apiUrl}/video-socket`, {
+      path: "/api/socket",
       query: { userId },
     });
 

@@ -1,29 +1,52 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongo
   namespace: microservices
 spec:
+  serviceName: "mongo"
   selector:
     matchLabels:
       app: mongo
   replicas: 1
+
   template:
     metadata:
       labels:
         app: mongo
+
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
       - name: mongo
         image: mongo:6.0
         ports:
         - containerPort: 27017
         volumeMounts:
-        - name: mongo-pv
+        - name: mongo-pvc
           mountPath: /data/db
+        - name: mongo-init
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
-      - name: mongo-pv
-        emptyDir: {}
+        - name: mongo-init
+          configMap:
+            name: mongo-init-script
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "300m"
+          memory: "512Mi"
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
 
 ---
 
@@ -33,6 +56,7 @@ metadata:
   name: mongo
   namespace: microservices
 spec:
+  clusterIP: None
   selector:
     app: mongo
   ports:

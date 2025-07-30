@@ -12,13 +12,13 @@ import {
 
   export const sendFriendRequestController = async (req: Request, res: Response) => {
     try {
-      const { senderPhone, receiverPhone } = req.body
+      const { senderPhone, receiverPhone, type = "0" } = req.body
   
       if (!senderPhone || !receiverPhone) {
         return res.status(400).json({ message: 'Missing senderPhone or receiverPhone.' })
       }
   
-      const result = await sendFriendRequestService(senderPhone, receiverPhone)
+      const result = await sendFriendRequestService(senderPhone, receiverPhone, type)
   
       return res.status(200).json( result )
     } catch (error) {

@@ -7,7 +7,8 @@ const CHAT_SERVICE_BASE_URL = process.env.CHAT_SERVICE_BASE_URL || "http://local
 
 export const sendFriendRequestService = async (
   senderPhone: string,
-  receiverPhone: string
+  receiverPhone: string,
+  type: string
 ): Promise<string> => {
   // Kiểm tra xem người dùng có phải là chính mình không
   if (senderPhone === receiverPhone) {
@@ -29,7 +30,7 @@ export const sendFriendRequestService = async (
       return 'Các bạn đã là bạn bè rồi';
     }
 
-    if (existingRelation.status === 'pending') {
+    if (existingRelation.status === 'pending' || existingRelation.status === 'no') {
       // Nếu lời mời là từ friend → user thì chấp nhận luôn
       if (existingRelation.user_phone === receiverPhone && existingRelation.friend_phone === senderPhone) {
         await AppDataSource.getRepository(Friend).update(
@@ -58,8 +59,9 @@ export const sendFriendRequestService = async (
       throw new Error('Đã gửi yêu cầu kết bạn.');
     }
 
-
   }
+
+
   const user = await AppDataSource.getRepository(User).findOne({ where: { phone: senderPhone } });
   const friend = await AppDataSource.getRepository(User).findOne({ where: { phone: receiverPhone } });
   // Check if both user and friend exist
@@ -71,13 +73,27 @@ export const sendFriendRequestService = async (
   friendEntity.friend = friend;  // Assign the friend
   friendEntity.user_phone = senderPhone;
   friendEntity.friend_phone = receiverPhone;
+
   friendEntity.status = "pending"; // Example status
+
+  if (type == "1"){
+    friendEntity.status = "no"
+    friendEntity.last_message = ""
+    const now = new Date();
+    friendEntity.last_message_date = now;
+    friendEntity.unread_count_friend = 0
+    friendEntity.unread_count_user = 0
+  }
 
     // ✅ Gửi thông báo "friend_request"
   try {
+    let content = `${senderPhone} đã gửi lời mời kết bạn.`;
+    if (type === "1") {
+      content = `có tin nhắn tin người lạ`;
+    }
     await axios.post(`${CHAT_SERVICE_BASE_URL}/api/chat/notification/send`, {
       type: "friend_request",
-      content: `${senderPhone} đã gửi lời mời kết bạn.`,
+      content: content,
       sender: senderPhone,
       receiver: receiverPhone,
       is_group: false

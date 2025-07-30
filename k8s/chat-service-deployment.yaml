@@ -4,7 +4,7 @@ metadata:
   name: chat-service
   namespace: microservices
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: chat-service
@@ -30,7 +30,14 @@ spec:
             - name: USER_SERVICE_BASE_URL
               value: http://user-service
             - name: CLIENT_ORIGIN
-              value: http://localhost:3000
+              value: http://localhost
+          resources:
+              limits:
+                memory: 512Mi
+                cpu: 400m
+              requests:
+                memory: 256Mi
+                cpu: 200m
 
 ---
 
