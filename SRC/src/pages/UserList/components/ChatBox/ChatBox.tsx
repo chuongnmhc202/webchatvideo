@@ -335,8 +335,6 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
   };
 
 
-
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -462,7 +460,6 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
     }
   };
 
-
   const handleTyping = (value: string) => {
     setTextMessage(value);
   console.log(messagesData?.receiver)
@@ -514,7 +511,7 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
           </span>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => alert("Đang gọi thoại...")} title="Gọi thoại" className="hover:bg-green-100 p-2 rounded-full"><MdCall className="text-2xl text-gray-600" /></button>
+            {/* <button onClick={() => handleVideoCallSFU(PhoneSender, selectedCategory !== '1' ? groupResponse?.id || "" : userData?.user.phone || "")} title="Gọi thoại" className="hover:bg-green-100 p-2 rounded-full"><MdCall className="text-2xl text-gray-600" /></button> */}
             <button onClick={() => handleVideoCall(PhoneSender, selectedCategory !== '1' ? groupResponse?.id || "" : userData?.user.phone || "")} title="Gọi video" className="hover:bg-green-100 p-2 rounded-full"><MdVideoCall className="text-2xl text-gray-600" /></button>
             <button title="Xoá tất cả tin nhắn" className="hover:bg-red-100 p-2 rounded-full"><MdDelete className="text-2xl" /></button>
           </div>
@@ -782,6 +779,7 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
     </div>
 
   );
+  
 }
 
 

@@ -12,8 +12,6 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
-
 
 async function bootstrap() {
   app.use(express.json());

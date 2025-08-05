@@ -16,6 +16,7 @@ spec:
       containers:
         - name: socket-service
           image: nguyentanthanh0709/socket-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8182
           env:

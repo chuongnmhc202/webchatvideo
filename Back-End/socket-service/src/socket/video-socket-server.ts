@@ -17,7 +17,7 @@ export async function initializeVideoSocketServer(io: Server) {
       [...room].filter(id => id !== socket.id).forEach(id => {
         videoIo.to(id).emit("new-peer", { socketId: socket.id, userId });
       });
-      console.log("join room", { roomId, userId } )
+      console.log("join room", { roomId, userId })
     });
 
     socket.on("offer", ({ targetSocketId, sdp }) => {
@@ -40,6 +40,31 @@ export async function initializeVideoSocketServer(io: Server) {
       }
     });
 
+    socket.on("start-share-screen", ({ userId, roomId }) => {
+      console.log(`📺 ${userId} started screen sharing in ${roomId}`);
+      socket.to(roomId).emit("user-started-share-screen", { userId, socketId: socket.id });
+    });
+
+    socket.on("stop-screen-share", ({ roomId, userId }) => {
+      console.log(`🛑 ${userId} stopped screen sharing`);
+      socket.broadcast.to(roomId).emit("stop-screen-share", { from: socket.id });
+    });
+
+    socket.on("screen-offer", ({ targetSocketId, sdp }) => {
+      videoIo.to(targetSocketId).emit("screen-offer", { from: socket.id, sdp });
+    });
+
+    socket.on("screen-answer", ({ targetSocketId, sdp }) => {
+      videoIo.to(targetSocketId).emit("screen-answer", { from: socket.id, sdp });
+    });
+
+    socket.on("screen-candidate", ({ targetSocketId, candidate }) => {
+      videoIo.to(targetSocketId).emit("screen-candidate", { from: socket.id, candidate });
+    });
+
+
+
+
     socket.on("disconnect", () => {
       const { roomId } = socket.data;
       if (roomId) {
@@ -48,4 +73,5 @@ export async function initializeVideoSocketServer(io: Server) {
       console.log(`❌ [Video] ${userId} disconnected`);
     });
   });
+
 }

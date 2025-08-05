@@ -16,6 +16,7 @@ spec:
       containers:
         - name: chat-service
           image: nguyentanthanh0709/chat-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8181
           env:

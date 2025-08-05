@@ -1,7 +1,25 @@
+/*
+ Navicat Premium Dump SQL
+
+ Source Server         : MYSQL_Local
+ Source Server Type    : MySQL
+ Source Server Version : 80042 (8.0.42)
+ Source Host           : localhost:3306
+ Source Schema         : user
+
+ Target Server Type    : MySQL
+ Target Server Version : 80042 (8.0.42)
+ File Encoding         : 65001
+
+ Date: 04/08/2025 21:16:40
+*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+-- ----------------------------
+-- Table structure for _prisma_migrations
+-- ----------------------------
 DROP TABLE IF EXISTS `_prisma_migrations`;
 CREATE TABLE `_prisma_migrations` (
   `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15,7 +33,9 @@ CREATE TABLE `_prisma_migrations` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
-
+-- ----------------------------
+-- Table structure for friend
+-- ----------------------------
 DROP TABLE IF EXISTS `friend`;
 CREATE TABLE `friend` (
   `user_phone` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -32,7 +52,9 @@ CREATE TABLE `friend` (
   CONSTRAINT `Friend_user_phone_fkey` FOREIGN KEY (`user_phone`) REFERENCES `user` (`phone`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
-
+-- ----------------------------
+-- Table structure for group
+-- ----------------------------
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -46,6 +68,9 @@ CREATE TABLE `group` (
   CONSTRAINT `Group_owner_phone_fkey` FOREIGN KEY (`owner_phone`) REFERENCES `user` (`phone`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
+-- ----------------------------
+-- Table structure for groupmember
+-- ----------------------------
 DROP TABLE IF EXISTS `groupmember`;
 CREATE TABLE `groupmember` (
   `group_id` bigint NOT NULL,
@@ -60,7 +85,9 @@ CREATE TABLE `groupmember` (
   CONSTRAINT `GroupMember_user_phone_fkey` FOREIGN KEY (`user_phone`) REFERENCES `user` (`phone`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
-
+-- ----------------------------
+-- Table structure for token
+-- ----------------------------
 DROP TABLE IF EXISTS `token`;
 CREATE TABLE `token` (
   `id` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -75,6 +102,9 @@ CREATE TABLE `token` (
   CONSTRAINT `Token_userPhone_fkey` FOREIGN KEY (`userPhone`) REFERENCES `user` (`phone`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `phone` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
