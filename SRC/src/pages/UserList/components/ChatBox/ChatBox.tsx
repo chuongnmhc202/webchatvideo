@@ -334,7 +334,6 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
     }
   };
 
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -486,7 +485,6 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
       setIsTyping(false);
     }, 1500);
   };
-
 
   return (
     <div className='flex flex-col bg-white p-4 shadow-md rounded-md border'>
@@ -779,8 +777,5 @@ export default function ChatBox({ selectedCategory, isChatBox, setIsChatBox }: A
     </div>
 
   );
-  
+
 }
-
-
-
