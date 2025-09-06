@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: microservices
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0       # Không cho phép pod nào bị unavailable
+      maxSurge: 1             # Cho phép tạo tối đa 1 pod mới trước khi xóa pod cũ
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: nguyentanthanh0709/user-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8180
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: DB_HOST
+              value: mysql.microservices.svc.cluster.local
+            - name: DB_USERNAME
+              value: rootuser
+            - name: DB_PASSWORD
+              value: pass
+            - name: DB_DATABASE
+              value: user
+            - name: DB_PORT
+              value: "3306"
+            - name: CHAT_SERVICE_BASE_URL
+              value: http://chat-service
+            - name: CLIENT_ORIGIN
+              value: http://localhost
+            - name: PORT
+              value: "8180"
+          readinessProbe:
+            httpGet:
+              path: /api/user
+              port: 8180
+            initialDelaySeconds: 30
+            periodSeconds: 55
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/user
+              port: 8180
+            initialDelaySeconds: 40
+            periodSeconds: 90
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container started' && sleep 2"]
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container stopping...' && sleep 5"]
+          resources:
+              limits:
+                memory: 256Mi
+                cpu: 200m
+              requests:
+                memory: 128Mi
+                cpu: 100m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: microservices
+spec:
+  selector:
+    app: user-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8180

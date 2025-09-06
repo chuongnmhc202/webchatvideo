@@ -1,0 +1,5 @@
+node_modules/
+dist/
+# Ignore fake media files
+fake_audio.wav
+fake_video.y4m

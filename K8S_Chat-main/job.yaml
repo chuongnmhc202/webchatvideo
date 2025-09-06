@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: webrtc-loadtest
+  namespace: loadtest
+spec:
+  completions: 1       # số job cần hoàn thành
+  parallelism: 1       # số pod chạy song song
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: webrtc-loadtest
+        image: nguyentanthanh0709/webrtc-loadtest:latest
+        env:
+        - name: BASE_URL
+          value: "http://localhost/call?callerId=0333657673&type=sent&isGroup=1"

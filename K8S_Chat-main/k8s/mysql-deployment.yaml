@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: microservices
+
+spec:
+
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: 1
+  serviceName: "mysql"
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mysql
+        image: mysql:8
+        ports:
+        - containerPort: 3306
+
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: user
+        - name: MYSQL_USER
+          value: rootuser
+        - name: MYSQL_PASSWORD
+          value: pass
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
+
+        volumeMounts:
+        - name: mysql-pv
+          mountPath: /var/lib/mysql
+        - name: initdb
+          mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+      - name: initdb
+        configMap:
+          name: mysql-initdb
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-pv
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: microservices
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306

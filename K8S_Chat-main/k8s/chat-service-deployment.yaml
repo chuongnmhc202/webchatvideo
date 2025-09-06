@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-service
+  namespace: microservices
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0       # Không cho phép pod nào bị unavailable
+      maxSurge: 1             # Cho phép tạo tối đa 1 pod mới trước khi xóa pod cũ
+  selector:
+    matchLabels:
+      app: chat-service
+  template:
+    metadata:
+      labels:
+        app: chat-service
+    spec:
+      containers:
+        - name: chat-service
+          image: nguyentanthanh0709/chat-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8181
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: MONGO_DB_URI
+              value: mongodb://mongo:27017/ChatDB
+            - name: PORT
+              value: "8181"
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+            - name: USER_SERVICE_BASE_URL
+              value: http://user-service
+            - name: CLIENT_ORIGIN
+              value: http://localhost
+          readinessProbe:
+            httpGet:
+              path: /api/chat
+              port: 8181
+            initialDelaySeconds: 20
+            periodSeconds: 55
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/chat
+              port: 8181
+            initialDelaySeconds: 30
+            periodSeconds: 70
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container started' && sleep 2"]
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container stopping...' && sleep 5"]
+          resources:
+              limits:
+                memory: 1Gi
+                cpu: 1000m
+              requests:
+                memory: 512Mi
+                cpu: 500m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-service
+  namespace: microservices
+spec:
+  selector:
+    app: chat-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8181
+

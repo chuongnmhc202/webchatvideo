@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socket-service
+  namespace: microservices
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate # Kubernetes sẽ từng bước xóa pod cũ và tạo pod mới, thay vì xóa tất cả cùng một lúc.
+    rollingUpdate:
+      maxUnavailable: 0       #  Không cho phép pod nào bị unavailable (0 cho phép pod nào dùng) (2 thì cho phép 2 pod dừng)
+      maxSurge: 1            # Cho phép tạo tối đa 1 pod mới trước khi xóa pod cũ (0 nghĩa là không tạo thêm pod mới trước khi xóa pod cũ)
+  selector:
+    matchLabels:
+      app: socket-service
+  template:
+    metadata:
+      labels:
+        app: socket-service
+    spec:
+      containers:
+        - name: socket-service
+          image: nguyentanthanh0709/socket-service:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8182
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: PORT
+              value: "8182"
+            - name: BROKER_1
+              value: kafka:9092
+            - name: USER_SERVICE_BASE_URL
+              value: http://user-service
+            - name: CLIENT_ORIGIN
+              value: http://localhost
+            - name: GROUP_ID
+              value: socket-service-group
+            - name: CLIENT_ID
+              value: socket-service
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: CHAT_SERVICE_BASE_URL
+              value: http://chat-service
+          readinessProbe:
+            httpGet:
+              path: /api/socket
+              port: 8182
+            initialDelaySeconds: 20 # chờ 5 giây sau khi container khởi động trước khi bắt đầu probe.
+            periodSeconds: 40      # probe lặp lại mỗi 5 giây
+            timeoutSeconds: 2.    # nếu không có phản hồi trong 2 giây → coi là probe thất bại.
+            successThreshold: 1  #.  cần 1 lần thành công liên tiếp để coi là "ready".
+            failureThreshold: 3   # thất bại 3 lần liên tiếp → coi pod chưa ready
+          livenessProbe:
+            httpGet:
+              path: /api/socket
+              port: 8182
+            initialDelaySeconds: 30
+            periodSeconds: 90
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container started' && sleep 2"]
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Container stopping...' && sleep 5"]
+          resources:
+              limits:
+                memory: 512Mi
+                cpu: 400m
+              requests:
+                memory: 256Mi
+                cpu: 200m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: socket-service
+  namespace: microservices
+spec:
+  selector:
+    app: socket-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8182
+
+---
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget    # Đây là resource dùng để bảo vệ số lượng Pod tối thiểu chạy.
+metadata:
+  name: socket-service-pdb
+  namespace: microservices
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: socket-service

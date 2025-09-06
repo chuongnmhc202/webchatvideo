@@ -1,0 +1,45 @@
+config:
+  target: "http://localhost"
+  phases:
+    - duration: 180
+      arrivalRate: 50
+      rampTo: 500
+  engines:
+    socketio: {}
+  socketio:
+    transports: ["websocket"]
+    path: "/api/socket"
+    query:
+      userId: "0900000049"
+
+scenarios:
+  - name: "Socket.IO stress test"
+    engine: socketio
+    flow:
+      - emit:
+          channel: "sendMessage"
+          data:
+            sender: "0900000049"
+            receiver: "0900000050"
+            is_group: false
+            content_type: "text"
+            text: "Hello from test traffic emit tin nhắn"
+            name: "ABC"
+            avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png"
+          ack: false
+      - think: 2
+
+      - loop:
+          - emit:
+              channel: "sendMessage"
+              data:
+                sender: "0900000049"
+                receiver: "0900000050"
+                is_group: false
+                content_type: "text"
+                text: "Ping from 0900000049 - 0900000050"
+                name: "ABC"
+                avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png"
+              ack: false
+          - think: 2
+        count: 20

@@ -1,0 +1,6 @@
+# ion-sfu/config.toml
+rtc_port_min = 5000
+rtc_port_max = 5000
+
+[signal]
+address = ":7001"

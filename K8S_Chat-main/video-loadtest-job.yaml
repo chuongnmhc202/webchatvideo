@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: video-loadtest
+spec:
+  completions: 1
+  parallelism: 1  # số pod chạy song song, tăng nếu muốn scale
+  template:
+    spec:
+      containers:
+      - name: loadtest
+        image: nguyentanthanh0709/video-loadtest:latest
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+      restartPolicy: Never

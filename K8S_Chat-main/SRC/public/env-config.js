@@ -1,0 +1,5 @@
+window.env = {
+  VITE_API_URL_DEV_USER: "http://localhost:8180",
+  VITE_API_URL_DEV_CHAT: "http://localhost:8181",
+  VITE_API_URL_DEV_SOCKET: "http://localhost:8182"
+}

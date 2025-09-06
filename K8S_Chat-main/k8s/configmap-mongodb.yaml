@@ -1,0 +1,737 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init-script
+  namespace: microservices
+data:
+  init-mongo.js: |
+
+    db.getCollection("messages").drop();
+    db.createCollection("messages");
+    db.getCollection("messages").createIndex({
+        sender: Int32("1"),
+        receiver: Int32("1"),
+        timestamp: Int32("1")
+    }, {
+        name: "sender_1_receiver_1_timestamp_1",
+        background: true
+    });
+    db.getCollection("messages").createIndex({
+        is_group: Int32("1")
+    }, {
+        name: "is_group_1",
+        background: true
+    });
+    db.getCollection("messages").createIndex({
+        content_type: Int32("1")
+    }, {
+        name: "content_type_1",
+        background: true
+    });
+
+    // ----------------------------
+    // Documents of messages
+    // ----------------------------
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa1db23c4de7a4a6d1f87"),
+        sender: "0333657673",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào cậu",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:23:39.182Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa1e023c4de7a4a6d1f8c"),
+        sender: "0333657673",
+        receiver: "0333657672",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào cậu",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:23:44.189Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0333657673",
+            "0333657672"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa1e523c4de7a4a6d1f91"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào cậu",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:23:49.788Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa22123c4de7a4a6d1f9b"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "chào mọi người",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:24:49.818Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa29623c4de7a4a6d1fa7"),
+        sender: "0333657673",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "bạn ơi",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:26:46.945Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa2ab23c4de7a4a6d1faa"),
+        sender: "0333657671",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:27:07.313Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa2ae23c4de7a4a6d1fac"),
+        sender: "0333657671",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "SMS cho phép gửi tin nhắn văn bản có độ dài khoảng 160 ký tự (chữ cái, số và ký hiệu). Đối với các ngôn ngữ khác có nhiều ký tự hơn, chẳng hạn như tiếng Trung hoặc tiếng Ả Rập, kích thước thư tối đa được giới hạn ở chỉ khoảng 70 ký tự.Apr 27, 2023",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:27:10.229Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa2c423c4de7a4a6d1fb5"),
+        sender: "0333657671",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "image",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2Fe60fd2aa-8688-4ab9-b417-036bab29cfce_demo-nghia-la-gi-2.jpg?alt=media&token=637c8be0-3617-4a15-84e7-3575d15074cf",
+        name_file: "demo-nghia-la-gi-2.jpg",
+        size_file: "23955",
+        mime_type_file: "image/jpeg",
+        duration_video: "0",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:27:32.316Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa30323c4de7a4a6d1fb7"),
+        sender: "0333657673",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "video",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2F7431594b-2cfb-42ee-a519-59043191bfcb_10.1%20EmptyDir%20Volume%20(Pod%20level).mp4?alt=media&token=2ea737f8-5d38-41f0-8d87-1fd265e6e73e",
+        name_file: "10.1 EmptyDir Volume (Pod level).mp4",
+        size_file: "5452717",
+        mime_type_file: "video/mp4",
+        duration_video: "0",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:28:35.036Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa31823c4de7a4a6d1fba"),
+        sender: "0333657673",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T05:28:56.987Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa31e23c4de7a4a6d1fbc"),
+        sender: "0333657671",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T05:29:02.019Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa35723c4de7a4a6d1fbf"),
+        sender: "0333657671",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T05:29:59.906Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa37623c4de7a4a6d1fc5"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "chào cả nhà",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:30:30.932Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa39523c4de7a4a6d1fce"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "có chuyện gì không",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "",
+        timestamp: ISODate("2025-08-24T05:31:01.193Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa3bc23c4de7a4a6d1fe1"),
+        sender: "0333657671",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "không có chi",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:31:40.198Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa3d623c4de7a4a6d1fe9"),
+        sender: "0333657674",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "à oke",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:32:06.744Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa43423c4de7a4a6d2002"),
+        sender: "0333657671",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "ủa",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:33:40.683Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa45423c4de7a4a6d2004"),
+        sender: "0333657671",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "hihi",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        timestamp: ISODate("2025-08-24T05:34:12.602Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa4d023c4de7a4a6d200d"),
+        sender: "0333657674",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "tôi không nhận được file pdf bạn gửi",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:36:16.742Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa69923c4de7a4a6d2033"),
+        sender: "0333657674",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "hihi",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:43:53.351Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa6ab23c4de7a4a6d2035"),
+        sender: "0333657674",
+        receiver: "22",
+        is_group: true,
+        content_type: "file",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2F4dff33a6-cf2d-494d-ae40-b4cbdc86c43c_file.pdf?alt=media&token=d16f0e94-3152-46ba-bd88-f03d8eb56a6c",
+        name_file: "file.pdf",
+        size_file: "11981",
+        mime_type_file: "application/pdf",
+        duration_video: "0",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:44:11.187Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa6b723c4de7a4a6d2038"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "image",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2Fb7f0562d-4f00-429a-b52e-0adfa9b79430_demo-la-gi-3-didongviet.jpg?alt=media&token=90ee882e-54e5-4082-923a-df1cdb73943b",
+        name_file: "demo-la-gi-3-didongviet.jpg",
+        size_file: "26211",
+        mime_type_file: "image/jpeg",
+        duration_video: "0",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:44:23.772Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa73123c4de7a4a6d2040"),
+        sender: "0333657673",
+        receiver: "23",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "nhóm ơi",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T05:46:25.632Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0333657673"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa73c23c4de7a4a6d2046"),
+        sender: "0333657674",
+        receiver: "23",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "sao đó",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:46:36.121Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0333657673"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaa74823c4de7a4a6d204c"),
+        sender: "0333657674",
+        receiver: "23",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "alo",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T05:46:48.331Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0333657673"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba0f23c4de7a4a6d2065"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào cậu",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T07:06:55.421Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba1623c4de7a4a6d206b"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "chào cậu",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T07:07:02.43Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba1e23c4de7a4a6d206e"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "bạn đang làm gì đó",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:07:10.204Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba2a23c4de7a4a6d2074"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "bạn đang làm gì đs",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:07:22.137Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba3323c4de7a4a6d2076"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "image",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2F0ab96901-1253-44c3-8ebd-30c679970724_demo-nghia-la-gi-2.jpg?alt=media&token=f463b613-0498-4691-883b-0ed6fbe8d2d3",
+        name_file: "demo-nghia-la-gi-2.jpg",
+        size_file: "23955",
+        mime_type_file: "image/jpeg",
+        duration_video: "0",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:07:31.226Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba5923c4de7a4a6d2079"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "video",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2F51a1c490-ba87-433b-ab36-82b73c3f30d6_9.2%20Mount%20configMap%20to%20Pod%20as%20Volume.mp4?alt=media&token=33b777dc-70a8-4ab1-a26e-5522df05d33a",
+        name_file: "9.2 Mount configMap to Pod as Volume.mp4",
+        size_file: "5223574",
+        mime_type_file: "video/mp4",
+        duration_video: "0",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T07:08:09.909Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba7023c4de7a4a6d207d"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "file",
+        status: "sent",
+        url_file: "https://firebasestorage.googleapis.com/v0/b/uploadingfile-4ee57.appspot.com/o/images%2F74443f9f-25d9-4c8a-b6eb-6c696bd26bac_file.pdf?alt=media&token=1af422fc-481f-417e-a0ef-4773ff7802b8",
+        name_file: "file.pdf",
+        size_file: "11981",
+        mime_type_file: "application/pdf",
+        duration_video: "0",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:08:32.121Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba7623c4de7a4a6d207f"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:08:38.12Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba7b23c4de7a4a6d2081"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:08:43.617Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba9323c4de7a4a6d2083"),
+        sender: "0333657674",
+        receiver: "0333657673",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:09:07.442Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aaba9723c4de7a4a6d2085"),
+        sender: "0333657673",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:09:11.26Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aabacd23c4de7a4a6d2089"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "chào",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        timestamp: ISODate("2025-08-24T07:10:05.001Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aabad823c4de7a4a6d208b"),
+        sender: "0333657674",
+        receiver: "22",
+        is_group: true,
+        content_type: "text",
+        status: "sent",
+        text: "cả nhà đang làm gì đó",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:10:16.925Z"),
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aabae223c4de7a4a6d2090"),
+        sender: "0333657671",
+        receiver: "22",
+        is_group: true,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:10:26.225Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aabae723c4de7a4a6d2092"),
+        sender: "22",
+        receiver: "0333657671",
+        is_group: true,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:10:31.337Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://img.freepik.com/premium-vector/character-avatar-isolated_729149-194801.jpg?semt=ais_hybrid&w=740",
+        name: "Vương Thanh Linh",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aabaea23c4de7a4a6d2094"),
+        sender: "22",
+        receiver: "0333657671",
+        is_group: true,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:10:34.691Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aac46923c4de7a4a6d20ca"),
+        sender: "0333657674",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "text",
+        status: "sent",
+        text: "hi",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        timestamp: ISODate("2025-08-24T07:51:05.527Z"),
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aac60923c4de7a4a6d20cf"),
+        sender: "0333657673",
+        receiver: "0333657672",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:58:01.156Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Linh",
+        __v: Int32("0"),
+        deleted_by: [
+            "0333657673",
+            "0333657672"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aac61823c4de7a4a6d20d3"),
+        sender: "0333657673",
+        receiver: "22",
+        is_group: true,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T07:58:16.744Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Linh",
+        __v: Int32("0"),
+        deleted_by: [
+            "0"
+        ]
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aadc1de952d52520bca304"),
+        sender: "0333657671",
+        receiver: "0333657674",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T09:32:13.967Z"),
+        status: "sent",
+        text: "🔴 Cuộc gọi video bắt đầu",
+        type_video_call: "offer",
+        avt: "https://genk.mediacdn.vn/139269124445442048/2024/9/12/screenshot-2024-09-10-134328-1726100949991-17261009501151829185931.png",
+        name: "Nguyễn Tấn Thành",
+        __v: Int32("0")
+    } ]);
+    db.getCollection("messages").insert([ {
+        _id: ObjectId("68aadc1fe952d52520bca306"),
+        sender: "0333657674",
+        receiver: "0333657671",
+        is_group: false,
+        content_type: "video_call_signal",
+        timestamp: ISODate("2025-08-24T09:32:15.98Z"),
+        status: "sent",
+        text: "🔴 Tham gia cuộc gọi",
+        type_video_call: "answer",
+        avt: "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png",
+        name: "Vương Thanh Huyền",
+        __v: Int32("0")
+    } ]);
+
